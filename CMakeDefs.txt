@@ -1,0 +1,17 @@
+###############################################################################
+# NAME:             CMakeDefs.txt
+#
+# AUTHOR:           Ethan D. Twardy <edtwardy@mtu.edu>
+#
+# DESCRIPTION:      CMake dependency declaration
+#
+# CREATED:          03/27/2020
+#
+# LAST EDITED:      03/27/2020
+###
+
+set(NETWORKING_SOURCES
+    source/Server.cpp
+)
+
+###############################################################################
