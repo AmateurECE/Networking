@@ -17,6 +17,8 @@
 
 #include <namespaces/Networking.h>
 
+#include <memory>
+
 class Networking::Interfaces::IDelegator
 {
 public:
