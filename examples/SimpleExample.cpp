@@ -4,7 +4,11 @@
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //
 // DESCRIPTION:     A Simple Example of using the library to deploy a TCP
-//                  server.
+//                  server. Compile using:
+//
+//                      g++ -g -Wall -Wextra -O0 --std=c++17 \
+//                          examples/SimpleExample.cpp -I include/ \
+//                          -lnetworking -L build/ -o TestBinary
 //
 // CREATED:         04/02/2020
 //

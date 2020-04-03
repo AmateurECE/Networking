@@ -92,7 +92,7 @@ Networking::TCP::TCPListener::listen()
 {
   int receivingSocket = -1;
   struct sockaddr_in connectingEntity = {0, .sin_family = 0};
-  size_t addrSize = 0;
+  size_t addrSize = sizeof(struct sockaddr_in);
 
   // TODO: Don't throw if non-blocking and EAGAIN
   //   If the socket is configured to be non-blocking and there are no waiting
