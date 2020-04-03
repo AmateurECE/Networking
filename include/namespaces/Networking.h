@@ -36,6 +36,7 @@ namespace Networking
   {
     class TCPListener;
     class TCPRequest;
+    class TCPClient;
   };
 };
 

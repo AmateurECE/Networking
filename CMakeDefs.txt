@@ -13,6 +13,9 @@
 set(NETWORKING_SOURCES
     source/Networking/BlockingServer.cpp
     source/Networking/DelegatorSTSP.cpp
+    source/Networking/TCP/TCPListener.cpp
+    source/Networking/TCP/TCPRequest.cpp
+    # source/Networking/TCP/TCPClient.cpp
 )
 
 ###############################################################################
