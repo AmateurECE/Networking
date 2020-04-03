@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            SimpleExample.cpp
+// NAME:            SimpleServer.cpp
 //
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //
@@ -12,7 +12,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/02/2020
+// LAST EDITED:     04/03/2020
 ////
 
 #include <Networking/BlockingServer.h>

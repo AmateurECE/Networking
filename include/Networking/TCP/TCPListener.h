@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/02/2020
+// LAST EDITED:     04/03/2020
 ////
 
 #ifndef __ET_TCPLISTENER__
@@ -31,6 +31,7 @@ public:
   // TODO: Make TCP::TCPListener compliant w/ Rule Of Three/Five
   virtual ~TCPListener();
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
+  // TODO: Make TCPListener Builder/Factory class.
 
 private:
   int getConfiguredSocket(bool reuseAddress, bool blocking) const;
