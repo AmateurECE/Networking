@@ -28,8 +28,8 @@ int main()
     };
 
   using namespace Networking;
-  TCP::TCPClient client = TCP::TCPClient{INADDR_LOOPBACK, 13001, handler,
-                                         logFunction};
+  NetAddress host{INADDR_LOOPBACK, 13001};
+  TCP::TCPClient client = TCP::TCPClient{host, handler, logFunction};
   client.connect();
 }
 

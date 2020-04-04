@@ -64,5 +64,9 @@ unsigned short Networking::NetAddress::getPortHostOrder() const
   return ntohs(m_address.sin_port);
 }
 
+const struct sockaddr_in& Networking::NetAddress::getSockAddr() const
+{
+  return const_cast<const sockaddr_in&>(m_address);
+}
 
 ///////////////////////////////////////////////////////////////////////////////

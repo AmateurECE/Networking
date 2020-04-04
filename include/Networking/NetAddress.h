@@ -30,6 +30,7 @@ public:
   unsigned int getIPHostOrder() const;
   std::string getIPDotNotation() const;
   unsigned short getPortHostOrder() const;
+  const struct sockaddr_in& getSockAddr() const;
 
 private:
   struct sockaddr_in m_address;

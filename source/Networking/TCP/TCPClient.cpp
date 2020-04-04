@@ -18,10 +18,10 @@
 #include <unistd.h>
 
 Networking::TCP::TCPClient
-::TCPClient(unsigned int theHostAddress, unsigned short thePort,
+::TCPClient(NetAddress hostAddress,
             std::function<void(int)> userHandler,
             std::function<void(const std::string&)> logStream)
-  : m_socket{0}, m_hostAddress{0, .sin_family=0}, m_userHandler{userHandler},
+  : m_socket{0}, m_hostAddress{hostAddress}, m_userHandler{userHandler},
     m_logStream{logStream}
 {
   errno = 0;
@@ -35,22 +35,23 @@ Networking::TCP::TCPClient
       delete pInt;
     }};
   *m_socket = socket;
-
-  // TODO: Overload ctor to allow hostname/ipstr instantiation.
-  m_hostAddress.sin_family = AF_INET;
-  m_hostAddress.sin_port = htons(thePort);
-  m_hostAddress.sin_addr.s_addr = htonl(theHostAddress);
 }
 
 void Networking::TCP::TCPClient::connect()
 {
   errno = 0;
+  const struct sockaddr_in& hostAddress = m_hostAddress.getSockAddr();
+
   if (-1 == ::connect(*m_socket,
-                      reinterpret_cast<struct sockaddr*>(&m_hostAddress),
-                      sizeof(m_hostAddress)))
+                      reinterpret_cast<const struct sockaddr*>(&hostAddress),
+                      sizeof(struct sockaddr_in)))
     {
       throw std::system_error{errno, std::generic_category()};
     }
+
+  m_logStream("Successfully connected to ("
+              + m_hostAddress.getIPDotNotation() + ", "
+              + std::to_string(m_hostAddress.getPortHostOrder()) + ")");
   m_userHandler(*m_socket);
 }
 

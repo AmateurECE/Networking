@@ -14,16 +14,15 @@
 #define __ET_TCPCLIENT__
 
 #include <namespaces/Networking.h>
+#include <Networking/NetAddress.h>
 
 #include <functional>
 #include <memory>
 
-#include <netinet/in.h>
-
 class Networking::TCP::TCPClient
 {
 public:
-  TCPClient(unsigned int theHostAddress, unsigned short thePort,
+  TCPClient(NetAddress hostAddress,
             std::function<void(int)> userHandler,
             std::function<void(const std::string&)> logStream);
   // TODO: TCPClient factory class
@@ -32,7 +31,7 @@ public:
 
 private:
   std::shared_ptr<int> m_socket;
-  struct sockaddr_in m_hostAddress;
+  NetAddress m_hostAddress;
   std::function<void(int)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 };
