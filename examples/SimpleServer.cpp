@@ -30,13 +30,13 @@ int main()
     {
       std::cerr << "Received connection from ("
       << requestor.getIPDotNotation() << ", "
-      << requestor.getPortHostOrder() << ")";
+      << requestor.getPortHostOrder() << ")\n";
     };
 
   using namespace Networking;
   std::unique_ptr<Interfaces::IListener> listener
     = std::make_unique<TCP::TCPListener>
-    (TCP::TCPListener::Factory::makeBlocking(13001, closure, std::cerr));
+    (TCP::TCPListener::Factory::makeBlocking(13001, closure));
   std::unique_ptr<Interfaces::IDelegator> delegator
     = std::make_unique<DelegatorSTSP>();
   BlockingServer server = BlockingServer{std::move(delegator),

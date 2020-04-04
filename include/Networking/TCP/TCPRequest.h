@@ -25,14 +25,14 @@ class Networking::TCP::TCPRequest : public Networking::Interfaces::IRequest
 public:
   TCPRequest(int socket, NetAddress connectingAddress,
              std::function<void(unsigned int,const NetAddress&)>& userHandler,
-             std::ostream& logStream);
+             std::function<void(const std::string&)> logStream);
   virtual void handle() final override;
 
 private:
   std::shared_ptr<int> m_socket;
   NetAddress m_connectingAddress;
   std::function<void(unsigned int,const NetAddress&)>& m_userHandler;
-  std::ostream& m_logStream;
+  std::function<void(const std::string&)> m_logStream;
 };
 
 #endif // __ET_TCPREQUEST__

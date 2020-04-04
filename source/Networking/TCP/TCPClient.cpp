@@ -7,7 +7,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/03/2020
+// LAST EDITED:     04/04/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -17,10 +17,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-Networking::TCP::TCPClient::TCPClient(unsigned int theHostAddress,
-                                      unsigned short thePort,
-                                      std::function<void(int)> userHandler,
-                                      std::ostream& logStream)
+Networking::TCP::TCPClient
+::TCPClient(unsigned int theHostAddress, unsigned short thePort,
+            std::function<void(int)> userHandler,
+            std::function<void(const std::string&)> logStream)
   : m_socket{0}, m_hostAddress{0, .sin_family=0}, m_userHandler{userHandler},
     m_logStream{logStream}
 {

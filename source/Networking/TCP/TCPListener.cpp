@@ -25,7 +25,7 @@ Networking::TCP::TCPListener
 ::TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               std::function<void(unsigned int,const NetAddress&)> userHandler,
-              std::ostream& logStream)
+              std::function<void(const std::string&)> logStream)
   : m_listeningSocket{0}, m_listeningAddress{0, .sin_addr = {0}},
     m_userHandler{userHandler}, m_logStream{logStream}
 {
@@ -54,7 +54,8 @@ Networking::TCP::TCPListener
       throw std::system_error{errno, std::generic_category()};
     }
 
-  m_logStream << "TCPListener is bound and listening on port " << thePort;
+  m_logStream("TCPListener is bound and listening on port "
+              + std::to_string(thePort));
 }
 
 int
@@ -154,8 +155,13 @@ Networking::TCP::TCPListener::Builder
 ::setUserHandler(UserHandler theUserHandler)
 { userHandler = theUserHandler; return *this; }
 
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setLogStream(std::function<void(const std::string&)> theLogStream)
+{ logStream = theLogStream; return *this; }
+
 Networking::TCP::TCPListener
-Networking::TCP::TCPListener::Builder::build(std::ostream& logStream) const
+Networking::TCP::TCPListener::Builder::build() const
 {
   return TCPListener{clientAddress, port, backlogSize, reuseAddress, blocking,
       userHandler, logStream};
@@ -167,25 +173,23 @@ Networking::TCP::TCPListener::Builder::build(std::ostream& logStream) const
 
 Networking::TCP::TCPListener
 Networking::TCP::TCPListener::Factory
-::makeBlocking(unsigned short thePort, UserHandler userHandler,
-               std::ostream& logStream)
+::makeBlocking(unsigned short thePort, UserHandler userHandler)
 {
   return Builder()
     .setPort(thePort)
     .setUserHandler(userHandler)
-    .build(logStream);
+    .build();
 }
 
 Networking::TCP::TCPListener
 Networking::TCP::TCPListener::Factory
-::makeNonBlocking(unsigned short thePort, UserHandler userHandler,
-                  std::ostream& logStream)
+::makeNonBlocking(unsigned short thePort, UserHandler userHandler)
 {
   return Builder()
     .setPort(thePort)
     .setBlocking(false)
     .setUserHandler(userHandler)
-    .build(logStream);
+    .build();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

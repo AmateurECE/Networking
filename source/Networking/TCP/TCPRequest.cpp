@@ -17,7 +17,7 @@
 Networking::TCP::TCPRequest
 ::TCPRequest(int socket, NetAddress connectingAddress,
              std::function<void(unsigned int,const NetAddress&)>& userHandler,
-             std::ostream& logStream)
+             std::function<void(const std::string&)> logStream)
   : m_socket{0}, m_connectingAddress{connectingAddress},
     m_userHandler{userHandler}, m_logStream{logStream}
 {
@@ -30,9 +30,9 @@ Networking::TCP::TCPRequest
 
 void Networking::TCP::TCPRequest::handle()
 {
-  m_logStream << "Handling connection from ("
-              << m_connectingAddress.getIPDotNotation() << ", "
-              << m_connectingAddress.getPortHostOrder() << ")";
+  m_logStream("Handling connection from ("
+              + m_connectingAddress.getIPDotNotation() + ", "
+              + std::to_string(m_connectingAddress.getPortHostOrder()) + ")");
   m_userHandler(*m_socket, m_connectingAddress);
 }
 

@@ -8,7 +8,7 @@
 #
 # CREATED:	    04/03/2020
 #
-# LAST EDITED:	    04/03/2020
+# LAST EDITED:	    04/04/2020
 ###
 
 CC=/usr/bin/g++
@@ -27,7 +27,10 @@ SimpleServer: SimpleServer.o
 
 SimpleClient: SimpleClient.o
 
-${OBJS}: force ${SRCS}
+${OBJS}: force ${SRCS} ../build/libnetworking.a
+
+../build/libnetworking.a:
+	cd .. && cmake -B build && make -C build
 
 force:
 

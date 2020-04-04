@@ -29,7 +29,7 @@ public:
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               // TODO: Make the unsigned int param to userHandler const
               std::function<void(unsigned int,const NetAddress&)> userHandler,
-              std::ostream& logStream);
+              std::function<void(const std::string&)> logStream);
 
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
 
@@ -42,7 +42,7 @@ private:
   std::shared_ptr<int> m_listeningSocket;
   struct sockaddr_in m_listeningAddress;
   std::function<void(unsigned int,const NetAddress&)> m_userHandler;
-  std::ostream& m_logStream;
+  std::function<void(const std::string&)> m_logStream;
 };
 
 class Networking::TCP::TCPListener::Builder
@@ -56,8 +56,9 @@ public:
   Builder setBlocking(bool);
   using UserHandler = std::function<void(unsigned int,const NetAddress&)>;
   Builder setUserHandler(UserHandler userHandler);
+  Builder setLogStream(std::function<void(const std::string&)> logStream);
 
-  TCPListener build(std::ostream& logStream) const;
+  TCPListener build() const;
 
 private:
   unsigned int clientAddress = INADDR_ANY;
@@ -66,6 +67,11 @@ private:
   bool reuseAddress = true;
   bool blocking = true;
   UserHandler userHandler = [](unsigned int,const NetAddress&){ return; };
+  std::function<void(const std::string&)> logStream =
+    [](const std::string& message)
+  {
+    std::cerr << message << '\n';
+  };
 };
 
 class Networking::TCP::TCPListener::Factory
@@ -74,11 +80,9 @@ public:
   Factory() = default;
   using UserHandler = std::function<void(unsigned int,const NetAddress&)>;
   static Networking::TCP::TCPListener makeBlocking(unsigned short thePort,
-                                                   UserHandler userHandler,
-                                                   std::ostream& logStream);
+                                                   UserHandler userHandler);
   static Networking::TCP::TCPListener makeNonBlocking(unsigned short thePort,
-                                                   UserHandler userHandler,
-                                                   std::ostream& logStream);
+                                                      UserHandler userHandler);
 };
 
 #endif // __ET_TCPLISTENER__

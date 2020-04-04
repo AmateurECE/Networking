@@ -8,7 +8,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/03/2020
+// LAST EDITED:     04/04/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -17,14 +17,19 @@
 
 int main()
 {
-  auto closure = [](int socket)
+  auto handler = [](int socket)
     {
       std::cerr << "Socket connected.";
     };
 
+  auto logFunction = [](const std::string& message)
+    {
+      std::cerr << message << '\n';
+    };
+
   using namespace Networking;
-  TCP::TCPClient client = TCP::TCPClient{INADDR_LOOPBACK, 13001, closure,
-                                         std::cerr};
+  TCP::TCPClient client = TCP::TCPClient{INADDR_LOOPBACK, 13001, handler,
+                                         logFunction};
   client.connect();
 }
 
