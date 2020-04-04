@@ -28,7 +28,7 @@ public:
   TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               // TODO: Make the unsigned int param to userHandler const
-              std::function<void(unsigned int,const sockaddr_in&)> userHandler,
+              std::function<void(unsigned int,const NetAddress&)> userHandler,
               std::ostream& logStream);
 
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
@@ -41,7 +41,7 @@ private:
 
   std::shared_ptr<int> m_listeningSocket;
   struct sockaddr_in m_listeningAddress;
-  std::function<void(unsigned int,const sockaddr_in&)> m_userHandler;
+  std::function<void(unsigned int,const NetAddress&)> m_userHandler;
   std::ostream& m_logStream;
 };
 
@@ -54,7 +54,7 @@ public:
   Builder setBacklogSize(unsigned int);
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
-  using UserHandler = std::function<void(unsigned int,const sockaddr_in&)>;
+  using UserHandler = std::function<void(unsigned int,const NetAddress&)>;
   Builder setUserHandler(UserHandler userHandler);
 
   TCPListener build(std::ostream& logStream) const;
@@ -65,14 +65,14 @@ private:
   unsigned int backlogSize = 8;
   bool reuseAddress = true;
   bool blocking = true;
-  UserHandler userHandler = [](unsigned int,const sockaddr_in&){ return; };
+  UserHandler userHandler = [](unsigned int,const NetAddress&){ return; };
 };
 
 class Networking::TCP::TCPListener::Factory
 {
 public:
   Factory() = default;
-  using UserHandler = std::function<void(unsigned int,const sockaddr_in&)>;
+  using UserHandler = std::function<void(unsigned int,const NetAddress&)>;
   static Networking::TCP::TCPListener makeBlocking(unsigned short thePort,
                                                    UserHandler userHandler,
                                                    std::ostream& logStream);

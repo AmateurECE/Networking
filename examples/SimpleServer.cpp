@@ -17,9 +17,8 @@
 
 #include <Networking/BlockingServer.h>
 #include <Networking/DelegatorSTSP.h>
+#include <Networking/NetAddress.h>
 #include <Networking/TCP/TCPListener.h>
-
-#include <arpa/inet.h>
 
 #include <iostream>
 #include <memory>
@@ -27,20 +26,11 @@
 int main()
 {
   // The user handler. Called whenever a connection is received.
-  auto closure = [](int socket, const sockaddr_in& connectingAddress)
+  auto closure = [](int socket, const Networking::NetAddress& requestor)
     {
-      char nameBuffer[INET_ADDRSTRLEN];
-      memset(nameBuffer, 0, sizeof(nameBuffer));
-      if (nameBuffer != inet_ntop(PF_INET,
-                                  &(connectingAddress.sin_addr.s_addr),
-                                  nameBuffer,
-                                  sizeof(nameBuffer)))
-        {
-          throw std::system_error{errno, std::generic_category(),
-              "inet_ntop failed"};
-        }
-      fprintf(stderr, "Received connection from (%s, %5i)\n", nameBuffer,
-              ntohs(connectingAddress.sin_port));
+      std::cerr << "Received connection from ("
+      << requestor.getIPDotNotation() << ", "
+      << requestor.getPortHostOrder() << ")";
     };
 
   using namespace Networking;

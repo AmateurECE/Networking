@@ -24,7 +24,7 @@
 Networking::TCP::TCPListener
 ::TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              std::function<void(unsigned int,const sockaddr_in&)> userHandler,
+              std::function<void(unsigned int,const NetAddress&)> userHandler,
               std::ostream& logStream)
   : m_listeningSocket{0}, m_listeningAddress{0, .sin_addr = {0}},
     m_userHandler{userHandler}, m_logStream{logStream}
@@ -90,7 +90,7 @@ std::unique_ptr<Networking::Interfaces::IRequest>
 Networking::TCP::TCPListener::listen()
 {
   int receivingSocket = -1;
-  struct sockaddr_in connectingEntity = {0, .sin_family = 0};
+  struct sockaddr_in connectingEntity = {0, .sin_addr={0}};
   size_t addrSize = sizeof(struct sockaddr_in);
 
   // TODO: Don't throw if non-blocking and EAGAIN
@@ -108,7 +108,7 @@ Networking::TCP::TCPListener::listen()
   try
     {
       return std::make_unique<TCP::TCPRequest>(receivingSocket,
-                                               connectingEntity,
+                                               NetAddress{connectingEntity},
                                                m_userHandler,
                                                m_logStream);
     }
@@ -151,8 +151,7 @@ Networking::TCP::TCPListener::Builder
 
 Networking::TCP::TCPListener::Builder
 Networking::TCP::TCPListener::Builder
-::setUserHandler(std::function<void(unsigned int,
-                                    const sockaddr_in&)> theUserHandler)
+::setUserHandler(UserHandler theUserHandler)
 { userHandler = theUserHandler; return *this; }
 
 Networking::TCP::TCPListener

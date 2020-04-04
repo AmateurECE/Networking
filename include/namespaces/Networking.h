@@ -7,7 +7,7 @@
 //
 // CREATED:         03/27/2020
 //
-// LAST EDITED:     04/02/2020
+// LAST EDITED:     04/04/2020
 ////
 
 #ifndef __ET_NETWORKING__
@@ -31,6 +31,9 @@ namespace Networking
   class DelegatorSTSP;  // Single-thread, Single-process
   class DelegatorMP;    // Multi-process
   class DelegatorMT;    // Multi-thread
+
+  // utility class encapsulating useful logic for dealing with inet addresses.
+  class NetAddress;
 
   namespace TCP
   {
