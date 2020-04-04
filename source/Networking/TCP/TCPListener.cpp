@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/03/2020
+// LAST EDITED:     04/04/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
@@ -117,6 +117,76 @@ Networking::TCP::TCPListener::listen()
       ::close(receivingSocket);
       throw;
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TCPListener::Builder
+////
+
+
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setClientAddress(unsigned int theClientAddress)
+{ clientAddress = theClientAddress; return *this; }
+
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setPort(unsigned short thePort)
+{ port = thePort; return *this; }
+
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setBacklogSize(unsigned int theBacklogSize)
+{ backlogSize = theBacklogSize; return *this; }
+
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setReuseAddress(bool isReuseAddress)
+{ reuseAddress = isReuseAddress; return *this; }
+
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setBlocking(bool isBlocking)
+{ blocking = isBlocking; return *this; }
+
+Networking::TCP::TCPListener::Builder
+Networking::TCP::TCPListener::Builder
+::setUserHandler(std::function<void(unsigned int,
+                                    const sockaddr_in&)> theUserHandler)
+{ userHandler = theUserHandler; return *this; }
+
+Networking::TCP::TCPListener
+Networking::TCP::TCPListener::Builder::build(std::ostream& logStream) const
+{
+  return TCPListener{clientAddress, port, backlogSize, reuseAddress, blocking,
+      userHandler, logStream};
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TCPListener::Factory
+////
+
+Networking::TCP::TCPListener
+Networking::TCP::TCPListener::Factory
+::makeBlocking(unsigned short thePort, UserHandler userHandler,
+               std::ostream& logStream)
+{
+  return Builder()
+    .setPort(thePort)
+    .setUserHandler(userHandler)
+    .build(logStream);
+}
+
+Networking::TCP::TCPListener
+Networking::TCP::TCPListener::Factory
+::makeNonBlocking(unsigned short thePort, UserHandler userHandler,
+                  std::ostream& logStream)
+{
+  return Builder()
+    .setPort(thePort)
+    .setBlocking(false)
+    .setUserHandler(userHandler)
+    .build(logStream);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
