@@ -19,6 +19,7 @@
 
 #include <netinet/in.h>
 
+#include <functional>
 #include <memory>
 #include <iostream>
 

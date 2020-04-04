@@ -15,6 +15,7 @@
 
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -26,9 +27,10 @@ Networking::TCP::TCPListener
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               std::function<void(unsigned int,const NetAddress&)> userHandler,
               std::function<void(const std::string&)> logStream)
-  : m_listeningSocket{0}, m_listeningAddress{0, .sin_addr = {0}},
-    m_userHandler{userHandler}, m_logStream{logStream}
+  : m_listeningSocket{0}, m_userHandler{userHandler}, m_logStream{logStream}
 {
+  memset(&m_listeningAddress, 0, sizeof(m_listeningAddress));
+
   // Create a shared_ptr
   m_listeningSocket
     = std::shared_ptr<int>(new int, [](int *pInt) {
@@ -91,13 +93,14 @@ std::unique_ptr<Networking::Interfaces::IRequest>
 Networking::TCP::TCPListener::listen()
 {
   int receivingSocket = -1;
-  struct sockaddr_in connectingEntity = {0, .sin_addr={0}};
+  struct sockaddr_in connectingEntity;
   size_t addrSize = sizeof(struct sockaddr_in);
 
   // TODO: Don't throw if non-blocking and EAGAIN
   //   If the socket is configured to be non-blocking and there are no waiting
   //   connections on the queue, accept() returns with EAGAIN or EWOULDBLOCK.
   //   Don't throw in this scenario.
+  memset(&connectingEntity, 0, sizeof(connectingEntity));
   if (-1 == (receivingSocket = ::accept
              (*m_listeningSocket,
               reinterpret_cast<struct sockaddr*>(&connectingEntity),

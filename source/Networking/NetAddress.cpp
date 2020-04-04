@@ -13,6 +13,7 @@
 #include <Networking/NetAddress.h>
 
 #include <arpa/inet.h>
+#include <string.h>
 
 #include <system_error>
 
@@ -31,8 +32,8 @@ Networking::NetAddress::NetAddress(const std::string& ipOrHostname)
 
 Networking::NetAddress::NetAddress(unsigned int ipHostOrder,
                                    unsigned short portHostOrder)
-  : m_address{0, .sin_addr={0}}
 {
+  memset(&m_address, 0, sizeof(m_address));
   m_address.sin_family = AF_INET;
   m_address.sin_addr.s_addr = htonl(ipHostOrder);
   m_address.sin_port = htons(portHostOrder);
