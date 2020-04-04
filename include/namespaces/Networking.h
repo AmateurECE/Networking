@@ -40,6 +40,10 @@ namespace Networking
     class TCPListener;
     class TCPRequest;
     class TCPClient;
+
+    class TLSListener;
+    class TLSRequest;
+    class TLSClient;
   };
 };
 

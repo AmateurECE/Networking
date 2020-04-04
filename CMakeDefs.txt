@@ -17,6 +17,8 @@ set(NETWORKING_SOURCES
     source/Networking/TCP/TCPRequest.cpp
     source/Networking/TCP/TCPClient.cpp
     source/Networking/NetAddress.cpp
+    source/Networking/TCP/TLSListener.cpp
+    source/Networking/TCP/TLSRequest.cpp
 )
 
 ###############################################################################

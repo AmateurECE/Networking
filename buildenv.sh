@@ -37,6 +37,9 @@ if [[ "x$1" = "x" ]]; then
     docker run -it --rm -v `realpath .`:/root --entrypoint="/bin/sh" $CONTAINER
 elif [[ $1 = "build" ]]; then
     docker build -t $CONTAINER .
+elif [[ $1 = "openssl" ]]; then
+    docker run -it --rm -v `realpath .`:/root --entrypoint="openssl" \
+           $CONTAINER ${@:2}
 else
     die 1 "$USAGE"
 fi

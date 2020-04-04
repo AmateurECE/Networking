@@ -17,19 +17,24 @@ CPPFLAGS=-g -Wall -Wextra -O0 --std=c++17 -I ../include
 LDFLAGS=-lnetworking -L ../build
 SRCS+=SimpleServer.cpp
 SRCS+=SimpleClient.cpp
+SRCS+=TlsServer.cpp
 OBJS=${patsubst %.cpp,%.o,${SRCS}}
 
 .PHONY: force
 
-all: SimpleServer SimpleClient
+all: SimpleServer SimpleClient TlsServer
 
 SimpleServer: SimpleServer.o
 
 SimpleClient: SimpleClient.o
 
+TlsServer: CPPFLAGS+= `pkg-config --cflags openssl`
+TlsServer: LDFLAGS+= `pkg-config --libs openssl`
+TlsServer: TlsServer.o
+
 ${OBJS}: force ${SRCS} ../build/libnetworking.a
 
-../build/libnetworking.a:
+../build/libnetworking.a: force
 	cd .. && cmake -B build && make -C build
 
 force:
