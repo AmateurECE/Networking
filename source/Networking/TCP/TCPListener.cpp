@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/02/2020
+// LAST EDITED:     04/03/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
@@ -22,31 +22,35 @@
 #include <system_error>
 
 Networking::TCP::TCPListener
-::TCPListener(unsigned short thePort, unsigned int theClientAddresses,
+::TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               std::function<void(unsigned int,const sockaddr_in&)> userHandler,
               std::ostream& logStream)
   : m_listeningSocket{0}, m_listeningAddress{0, .sin_addr = {0}},
     m_userHandler{userHandler}, m_logStream{logStream}
 {
-  m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
+  // Create a shared_ptr
+  m_listeningSocket
+    = std::shared_ptr<int>(new int, [](int *pInt) {
+        ::close(*pInt);
+        delete pInt;
+      });
+  *m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
 
   // TODO: Enable IPv6
   m_listeningAddress.sin_family = AF_INET;
   m_listeningAddress.sin_port = htons(thePort);
   m_listeningAddress.sin_addr.s_addr = htonl(theClientAddresses);
   errno = 0;
-  if (-1 == ::bind(m_listeningSocket,
+  if (-1 == ::bind(*m_listeningSocket,
                    reinterpret_cast<struct sockaddr*>(&m_listeningAddress),
                    sizeof(m_listeningAddress)))
     {
-      ::close(m_listeningSocket);
       throw std::system_error{errno, std::generic_category()};
     }
 
-  if (0 != ::listen(m_listeningSocket, theBacklogSize))
+  if (0 != ::listen(*m_listeningSocket, theBacklogSize))
     {
-      ::close(m_listeningSocket);
       throw std::system_error{errno, std::generic_category()};
     }
 
@@ -82,11 +86,6 @@ Networking::TCP::TCPListener
   return theSocket;
 }
 
-Networking::TCP::TCPListener::~TCPListener()
-{
-  ::close(m_listeningSocket);
-}
-
 std::unique_ptr<Networking::Interfaces::IRequest>
 Networking::TCP::TCPListener::listen()
 {
@@ -99,7 +98,7 @@ Networking::TCP::TCPListener::listen()
   //   connections on the queue, accept() returns with EAGAIN or EWOULDBLOCK.
   //   Don't throw in this scenario.
   if (-1 == (receivingSocket = ::accept
-             (m_listeningSocket,
+             (*m_listeningSocket,
               reinterpret_cast<struct sockaddr*>(&connectingEntity),
               reinterpret_cast<socklen_t*>(&addrSize))))
     {

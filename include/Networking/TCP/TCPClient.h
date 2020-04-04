@@ -25,6 +25,8 @@ public:
   TCPClient(unsigned int theHostAddress, unsigned short thePort,
             std::function<void(int)> userHandler, std::ostream& logStream);
   // TODO: Make TCPClient compliant w/ Rule Of Three/Five.
+  // TODO: TCPClient factory class
+  // TODO: Allow non-blocking configuration for TCPClient
   ~TCPClient();
   void connect();
 

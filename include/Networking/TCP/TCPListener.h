@@ -19,24 +19,24 @@
 
 #include <netinet/in.h>
 
+#include <memory>
 #include <ostream>
 
 class Networking::TCP::TCPListener : public Networking::Interfaces::IListener
 {
 public:
-  TCPListener(unsigned short thePort, unsigned int theClientAddresses,
+  TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               std::function<void(unsigned int,const sockaddr_in&)> userHandler,
               std::ostream& logStream);
-  // TODO: Make TCP::TCPListener compliant w/ Rule Of Three/Five
-  virtual ~TCPListener();
+
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
   // TODO: Make TCPListener Builder/Factory class.
 
 private:
   int getConfiguredSocket(bool reuseAddress, bool blocking) const;
 
-  int m_listeningSocket;
+  std::shared_ptr<int> m_listeningSocket;
   struct sockaddr_in m_listeningAddress;
   std::function<void(unsigned int,const sockaddr_in&)> m_userHandler;
   std::ostream& m_logStream;

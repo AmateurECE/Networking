@@ -45,7 +45,7 @@ int main()
 
   using namespace Networking;
   std::unique_ptr<Interfaces::IListener> listener
-    = std::make_unique<TCP::TCPListener>(13001, INADDR_LOOPBACK, 8, true, true,
+    = std::make_unique<TCP::TCPListener>(INADDR_LOOPBACK, 13001, 8, true, true,
                                          closure, std::cerr);
   std::unique_ptr<Interfaces::IDelegator> delegator
     = std::make_unique<DelegatorSTSP>();
