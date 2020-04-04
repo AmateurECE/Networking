@@ -16,6 +16,7 @@
 #include <namespaces/Networking.h>
 
 #include <functional>
+#include <memory>
 
 #include <netinet/in.h>
 
@@ -24,14 +25,12 @@ class Networking::TCP::TCPClient
 public:
   TCPClient(unsigned int theHostAddress, unsigned short thePort,
             std::function<void(int)> userHandler, std::ostream& logStream);
-  // TODO: Make TCPClient compliant w/ Rule Of Three/Five.
   // TODO: TCPClient factory class
   // TODO: Allow non-blocking configuration for TCPClient
-  ~TCPClient();
   void connect();
 
 private:
-  int m_socket;
+  std::shared_ptr<int> m_socket;
   struct sockaddr_in m_hostAddress;
   std::function<void(int)> m_userHandler;
   std::ostream& m_logStream;

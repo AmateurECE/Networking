@@ -25,11 +25,16 @@ Networking::TCP::TCPClient::TCPClient(unsigned int theHostAddress,
     m_logStream{logStream}
 {
   errno = 0;
-  m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
-  if (-1 == m_socket)
+  int socket= ::socket(PF_INET, SOCK_STREAM, 0);
+  if (-1 == socket)
     {
       throw std::system_error{errno, std::generic_category()};
     }
+  m_socket = std::shared_ptr<int>{new int, [](int* pInt){
+      ::close(*pInt);
+      delete pInt;
+    }};
+  *m_socket = socket;
 
   // TODO: Overload ctor to allow hostname/ipstr instantiation.
   m_hostAddress.sin_family = AF_INET;
@@ -37,21 +42,16 @@ Networking::TCP::TCPClient::TCPClient(unsigned int theHostAddress,
   m_hostAddress.sin_addr.s_addr = htonl(theHostAddress);
 }
 
-Networking::TCP::TCPClient::~TCPClient()
-{
-  ::close(m_socket);
-}
-
 void Networking::TCP::TCPClient::connect()
 {
   errno = 0;
-  if (-1 == ::connect(m_socket,
+  if (-1 == ::connect(*m_socket,
                       reinterpret_cast<struct sockaddr*>(&m_hostAddress),
                       sizeof(m_hostAddress)))
     {
       throw std::system_error{errno, std::generic_category()};
     }
-  m_userHandler(m_socket);
+  m_userHandler(*m_socket);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
