@@ -10,8 +10,8 @@
 // LAST EDITED:     04/05/2020
 ////
 
+#include <Networking/Interfaces/IRequest.h>
 #include <Networking/TCP/TLSListener.h>
-#include <Networking/TCP/TLSRequest.h>
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -50,7 +50,7 @@ Networking::TCP::TLSListener
 std::unique_ptr<Networking::Interfaces::IRequest>
 Networking::TCP::TLSListener::listen()
 {
-  return std::make_unique<TLSRequest>();
+  return m_listener.listen();
 }
 
 SSL_CTX* Networking::TCP::TLSListener::createContext() const
@@ -113,6 +113,7 @@ Networking::TCP::TLSListener::TLSHandler
   SSL* sslRaw = m_ssl.get();
 
   SSL_set_fd(sslRaw, socket);
+  // TODO: Look into supporting ALPN
   if (0 >= SSL_accept(sslRaw))
     {
       // TODO: Do we need to throw here?
