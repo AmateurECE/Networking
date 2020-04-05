@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #include <Networking/TCP/TLSListener.h>
@@ -30,20 +30,20 @@ bool Networking::TCP::TLSListener::hasInitializedOpenSSL = false;
 Networking::TCP::TLSListener
 ::TLSListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              bool useTwoWayAuthentication, const std::string& certificateFile,
-              const std::string& privateKeyFile,
+              bool useTwoWayAuthentication, std::string certificateFile,
+              std::string privateKeyFile,
               std::function<void(SSL*,const NetAddress&)> userHandler,
               std::function<void(const std::string&)> logStream)
-  : m_sslContext{createContext(), [](SSL_CTX* context)
-    {
-      SSL_CTX_free(context);
-    }},
+  : m_certificateFile{certificateFile}, m_privateKeyFile{privateKeyFile},
+    m_sslContext{createContext(), [](SSL_CTX* context)
+        {
+          SSL_CTX_free(context);
+        }},
     m_tlsHandler{std::make_unique<struct TLSHandler>(m_sslContext,
                                                      userHandler)},
     m_listener{theClientAddresses, thePort, theBacklogSize, reuseAddress,
         blocking, std::ref(*m_tlsHandler), logStream},
     m_useTwoWayAuthentication{useTwoWayAuthentication},
-    m_certificateFile{certificateFile}, m_privateKeyFile{privateKeyFile},
     m_userHandler{userHandler}, m_logStream{logStream}
 {}
 
@@ -162,12 +162,12 @@ Networking::TCP::TLSListener::Builder
 
 Networking::TCP::TLSListener::Builder
 Networking::TCP::TLSListener::Builder
-::setCertificateFile(const std::string& theCertificateFile)
+::setCertificateFile(std::string theCertificateFile)
 { certificateFile = theCertificateFile; return *this; }
 
 Networking::TCP::TLSListener::Builder
 Networking::TCP::TLSListener::Builder
-::setPrivateKeyFile(const std::string& thePrivateKeyFile)
+::setPrivateKeyFile(std::string thePrivateKeyFile)
 { privateKeyFile = thePrivateKeyFile; return *this; }
 
 Networking::TCP::TLSListener::Builder

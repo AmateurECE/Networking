@@ -25,12 +25,15 @@ OBJS=${patsubst %.cpp,%.o,${SRCS}}
 all: SimpleServer SimpleClient TlsServer
 
 SimpleServer: SimpleServer.o
+	$(CC) $^ $(LDFLAGS) -o $@
 
 SimpleClient: SimpleClient.o
+	$(CC) $^ $(LDFLAGS) -o $@
 
 TlsServer: CPPFLAGS+= `pkg-config --cflags openssl`
 TlsServer: LDFLAGS+= `pkg-config --libs openssl`
 TlsServer: TlsServer.o
+	$(CC) $^ $(LDFLAGS) -o $@
 
 ${OBJS}: force ${SRCS} ../build/libnetworking.a
 

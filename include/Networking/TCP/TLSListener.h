@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -27,8 +27,8 @@ class Networking::TCP::TLSListener : public Networking::Interfaces::IListener
 public:
   TLSListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              bool useTwoWayAuthentication, const std::string& certficateFile,
-              const std::string& privateKeyFile,
+              bool useTwoWayAuthentication, std::string certficateFile,
+              std::string privateKeyFile,
               std::function<void(SSL*,const NetAddress&)> userHandler,
               std::function<void(const std::string&)> logStream);
 
@@ -41,12 +41,12 @@ private:
 
   SSL_CTX* createContext() const;
 
+  const std::string m_certificateFile;
+  const std::string m_privateKeyFile;
   std::shared_ptr<SSL_CTX> m_sslContext;
   std::unique_ptr<struct TLSHandler> m_tlsHandler;
   TCPListener m_listener;
   const bool m_useTwoWayAuthentication;
-  const std::string m_certificateFile;
-  const std::string m_privateKeyFile;
   std::function<void(SSL*,const NetAddress&)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 
@@ -77,8 +77,8 @@ public:
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
   Builder setTwoWayAuthentication(bool);
-  Builder setCertificateFile(const std::string&);
-  Builder setPrivateKeyFile(const std::string&);
+  Builder setCertificateFile(std::string);
+  Builder setPrivateKeyFile(std::string);
   using UserHandler = std::function<void(SSL*,const NetAddress&)>;
   Builder setUserHandler(UserHandler userHandler);
   Builder setLogStream(std::function<void(const std::string&)> logStream);
@@ -92,8 +92,8 @@ private:
   bool reuseAddress = true;
   bool blocking = true;
   bool twoWayAuthentication = false;
-  std::string certificateFile; // NO DEFAULT
-  std::string privateKeyFile; // NO DEFAULT
+  std::string certificateFile = ""; // NO DEFAULT
+  std::string privateKeyFile = ""; // NO DEFAULT
   UserHandler userHandler = [](SSL*,const NetAddress&){ return; };
   std::function<void(const std::string&)> logStream =
     [](const std::string& message)

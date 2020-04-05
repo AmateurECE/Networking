@@ -7,7 +7,7 @@
 #
 # CREATED:          03/27/2020
 #
-# LAST EDITED:      04/04/2020
+# LAST EDITED:      04/05/2020
 ###
 
 cmake_minimum_required(VERSION 3.15.1)
@@ -15,6 +15,8 @@ cmake_minimum_required(VERSION 3.15.1)
 project(SortMedia DESCRIPTION "Media Sorter")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -O3 --std=c++17")
+# Debugging flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -O0 --std=c++17")
 
 find_package(OpenSSL REQUIRED)
 
@@ -29,7 +31,7 @@ target_include_directories(networking PRIVATE
 )
 target_link_libraries(networking "${OPENSSL_LIBRARIES}")
 
-enable_testing()
-add_subdirectory(test)
+# enable_testing()
+# add_subdirectory(test)
 
 ###############################################################################
