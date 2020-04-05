@@ -7,7 +7,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #ifndef __ET_TCPCLIENT__
@@ -25,8 +25,6 @@ public:
   TCPClient(NetAddress hostAddress,
             std::function<void(int)> userHandler,
             std::function<void(const std::string&)> logStream);
-  // TODO: TCPClient factory class
-  // TODO: Allow non-blocking configuration for TCPClient
   void connect();
 
 private:

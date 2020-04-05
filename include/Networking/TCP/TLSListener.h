@@ -61,8 +61,6 @@ struct Networking::TCP::TLSListener::TLSHandler
 
 private:
   std::shared_ptr<SSL> m_ssl;
-  // TODO: Assess possibility of race conditions in TLSHandler
-  //   concerning multithreaded access of SSL_CTX?
   std::shared_ptr<SSL_CTX> m_sslContext;
   std::function<void(SSL*,const NetAddress&)> m_userHandler;
 };

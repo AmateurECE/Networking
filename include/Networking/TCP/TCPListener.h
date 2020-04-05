@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #ifndef __ET_TCPLISTENER__
@@ -28,7 +28,6 @@ class Networking::TCP::TCPListener : public Networking::Interfaces::IListener
 public:
   TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              // TODO: Make the unsigned int param to userHandler const
               std::function<void(unsigned int,const NetAddress&)> userHandler,
               std::function<void(const std::string&)> logStream);
 

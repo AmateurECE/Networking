@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
@@ -39,7 +39,6 @@ Networking::TCP::TCPListener
       });
   *m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
 
-  // TODO: Enable IPv6
   m_listeningAddress.sin_family = AF_INET;
   m_listeningAddress.sin_port = htons(thePort);
   m_listeningAddress.sin_addr.s_addr = htonl(theClientAddresses);
@@ -96,10 +95,6 @@ Networking::TCP::TCPListener::listen()
   struct sockaddr_in connectingEntity;
   size_t addrSize = sizeof(struct sockaddr_in);
 
-  // TODO: Don't throw if non-blocking and EAGAIN
-  //   If the socket is configured to be non-blocking and there are no waiting
-  //   connections on the queue, accept() returns with EAGAIN or EWOULDBLOCK.
-  //   Don't throw in this scenario.
   memset(&connectingEntity, 0, sizeof(connectingEntity));
   if (-1 == (receivingSocket = ::accept
              (*m_listeningSocket,

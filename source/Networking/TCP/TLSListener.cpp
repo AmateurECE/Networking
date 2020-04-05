@@ -55,13 +55,11 @@ Networking::TCP::TLSListener::listen()
 
 SSL_CTX* Networking::TCP::TLSListener::createContext() const
 {
-  // TODO: Add mutexes to make initialization safe
   if (!hasInitializedOpenSSL)
     {
       hasInitializedOpenSSL = true;
       SSL_load_error_strings();
       OpenSSL_add_ssl_algorithms();
-      // TODO: Creative solution for cleanup_openssl()
     }
 
   SSL_CTX* context = nullptr;
@@ -113,17 +111,12 @@ Networking::TCP::TLSListener::TLSHandler
   SSL* sslRaw = m_ssl.get();
 
   SSL_set_fd(sslRaw, socket);
-  // TODO: Look into supporting ALPN
   if (0 >= SSL_accept(sslRaw))
     {
-      // TODO: Do we need to throw here?
-      //   Maybe we should simply log an error and return instead?
-      //   Maybe we should throw a custom exception?
       throw std::runtime_error{"Error in SSL session negotiation: "
           + getSSLErrors()};
     }
 
-  // TODO: Implement two-way authentication
   m_userHandler(sslRaw, clientAddress);
 }
 
