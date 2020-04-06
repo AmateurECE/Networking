@@ -6,13 +6,13 @@
 // DESCRIPTION:     A Simple Example of using the library to deploy a TCP
 //                  server. Compile using:
 //
-//                      g++ -g -Wall -Wextra -O0 --std=c++17 \
-//                          examples/SimpleExample.cpp -I include/ \
+//                      g++ -g -Wall -Wextra -O0 --std=c++17
+//                          examples/SimpleExample.cpp -I include/
 //                          -lnetworking -L build/ -o TestBinary
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #include <Networking/BlockingServer.h>
@@ -34,11 +34,14 @@ int main()
     };
 
   using namespace Networking;
-  std::unique_ptr<Interfaces::IListener> listener
-    = std::make_unique<TCP::TCPListener>
-    (TCP::TCPListener::Factory::makeBlocking(13001, closure));
-  std::unique_ptr<Interfaces::IDelegator> delegator
-    = std::make_unique<DelegatorSTSP>();
+  using namespace Networking::Interfaces;
+  using namespace Networking::TCP;
+  TCPListener::Builder builder = TCPListener::Builder()
+    .setPort(13001)
+    .setUserHandler(closure);
+  std::unique_ptr<IListener> listener
+    = std::make_unique<TCPListener>(builder.build());
+  std::unique_ptr<IDelegator> delegator = std::make_unique<DelegatorSTSP>();
   BlockingServer server = BlockingServer{std::move(delegator),
                                          std::move(listener)};
   server.start();

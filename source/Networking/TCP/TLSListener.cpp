@@ -118,11 +118,11 @@ Networking::TCP::TLSListener::TLSHandler
   SSL_set_fd(sslRaw, socket);
   if (0 >= SSL_accept(sslRaw))
     {
+      m_logStream("Client " + clientAddress.getIPDotNotation()
+                  + " failed TLS handshake(" + getSSLErrors()
+                  + "). Severing connection.");
       if (m_handshakeFailureAction == HandshakeFailureAction::NOTHING)
         {
-          m_logStream("Client " + clientAddress.getIPDotNotation()
-                      + " failed TLS handshake(" + getSSLErrors()
-                      + "). Severing connection.");
           return;
         }
       else

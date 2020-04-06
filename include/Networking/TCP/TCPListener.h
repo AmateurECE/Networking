@@ -34,7 +34,6 @@ public:
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
 
   class Builder;
-  class Factory;
 
 private:
   int getConfiguredSocket(bool reuseAddress, bool blocking) const;
@@ -72,17 +71,6 @@ private:
   {
     std::cerr << message << '\n';
   };
-};
-
-class Networking::TCP::TCPListener::Factory
-{
-public:
-  Factory() = default;
-  using UserHandler = std::function<void(unsigned int,const NetAddress&)>;
-  static Networking::TCP::TCPListener makeBlocking(unsigned short thePort,
-                                                   UserHandler userHandler);
-  static Networking::TCP::TCPListener makeNonBlocking(unsigned short thePort,
-                                                      UserHandler userHandler);
 };
 
 #endif // __ET_TCPLISTENER__

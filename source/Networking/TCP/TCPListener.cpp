@@ -122,7 +122,6 @@ Networking::TCP::TCPListener::listen()
 // TCPListener::Builder
 ////
 
-
 Networking::TCP::TCPListener::Builder
 Networking::TCP::TCPListener::Builder
 ::setClientAddress(unsigned int theClientAddress)
@@ -163,31 +162,6 @@ Networking::TCP::TCPListener::Builder::build() const
 {
   return TCPListener{clientAddress, port, backlogSize, reuseAddress, blocking,
       userHandler, logStream};
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// TCPListener::Factory
-////
-
-Networking::TCP::TCPListener
-Networking::TCP::TCPListener::Factory
-::makeBlocking(unsigned short thePort, UserHandler userHandler)
-{
-  return Builder()
-    .setPort(thePort)
-    .setUserHandler(userHandler)
-    .build();
-}
-
-Networking::TCP::TCPListener
-Networking::TCP::TCPListener::Factory
-::makeNonBlocking(unsigned short thePort, UserHandler userHandler)
-{
-  return Builder()
-    .setPort(thePort)
-    .setBlocking(false)
-    .setUserHandler(userHandler)
-    .build();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
