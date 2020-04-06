@@ -7,7 +7,7 @@
 //
 // CREATED:         03/27/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #ifndef __ET_NETWORKING__
@@ -42,8 +42,8 @@ namespace Networking
     class TCPClient;
 
     class TLSListener;
-    class TLSRequest;
     class TLSClient;
+    class ClientFailedTLSHandshakeException;
   };
 };
 

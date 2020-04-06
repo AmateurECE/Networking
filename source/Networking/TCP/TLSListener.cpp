@@ -11,6 +11,8 @@
 ////
 
 #include <Networking/Interfaces/IRequest.h>
+#include <Networking/NetAddress.h>
+#include <Networking/TCP/ClientFailedTLSHandshakeException.h>
 #include <Networking/TCP/TLSListener.h>
 
 #include <openssl/ssl.h>
@@ -30,8 +32,8 @@ bool Networking::TCP::TLSListener::hasInitializedOpenSSL = false;
 Networking::TCP::TLSListener
 ::TLSListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              bool useTwoWayAuthentication, std::string certificateFile,
-              std::string privateKeyFile,
+              bool useTwoWayAuthentication, HandshakeFailureAction action,
+              std::string certificateFile, std::string privateKeyFile,
               std::function<void(SSL*,const NetAddress&)> userHandler,
               std::function<void(const std::string&)> logStream)
   : m_certificateFile{certificateFile}, m_privateKeyFile{privateKeyFile},
@@ -39,8 +41,8 @@ Networking::TCP::TLSListener
         {
           SSL_CTX_free(context);
         }},
-    m_tlsHandler{std::make_unique<struct TLSHandler>(m_sslContext,
-                                                     userHandler)},
+    m_tlsHandler{std::make_unique<struct TLSHandler>
+        (m_sslContext, userHandler, action, logStream)},
     m_listener{theClientAddresses, thePort, theBacklogSize, reuseAddress,
         blocking, std::ref(*m_tlsHandler), logStream},
     m_useTwoWayAuthentication{useTwoWayAuthentication},
@@ -92,8 +94,11 @@ SSL_CTX* Networking::TCP::TLSListener::createContext() const
 
 Networking::TCP::TLSListener::TLSHandler
 ::TLSHandler(std::shared_ptr<SSL_CTX> sslContext,
-             std::function<void(SSL*,const NetAddress&)> userHandler)
-  : m_ssl{nullptr}, m_sslContext{sslContext}, m_userHandler{userHandler}
+             std::function<void(SSL*,const NetAddress&)> userHandler,
+             HandshakeFailureAction handshakeFailureAction,
+             std::function<void(const std::string&)> logStream)
+  : m_ssl{nullptr}, m_sslContext{sslContext}, m_userHandler{userHandler},
+    m_handshakeFailureAction{handshakeFailureAction}, m_logStream{logStream}
 {}
 
 void
@@ -113,8 +118,18 @@ Networking::TCP::TLSListener::TLSHandler
   SSL_set_fd(sslRaw, socket);
   if (0 >= SSL_accept(sslRaw))
     {
-      throw std::runtime_error{"Error in SSL session negotiation: "
-          + getSSLErrors()};
+      if (m_handshakeFailureAction == HandshakeFailureAction::NOTHING)
+        {
+          m_logStream("Client " + clientAddress.getIPDotNotation()
+                      + " failed TLS handshake(" + getSSLErrors()
+                      + "). Severing connection.");
+          return;
+        }
+      else
+        {
+          throw ClientFailedTLSHandshakeException(getSSLErrors(),
+                                                  clientAddress);
+        }
     }
 
   m_userHandler(sslRaw, clientAddress);
@@ -156,6 +171,11 @@ Networking::TCP::TLSListener::Builder
 
 Networking::TCP::TLSListener::Builder
 Networking::TCP::TLSListener::Builder
+::setHandshakeFailureAction(HandshakeFailureAction theFailureAction)
+{ failureAction = theFailureAction; return *this; }
+
+Networking::TCP::TLSListener::Builder
+Networking::TCP::TLSListener::Builder
 ::setCertificateFile(std::string theCertificateFile)
 { certificateFile = theCertificateFile; return *this; }
 
@@ -178,8 +198,8 @@ Networking::TCP::TLSListener
 Networking::TCP::TLSListener::Builder::build() const
 {
   return TLSListener{clientAddress, port, backlogSize, reuseAddress, blocking,
-      twoWayAuthentication, certificateFile, privateKeyFile, userHandler,
-      logStream};
+      twoWayAuthentication, failureAction, certificateFile, privateKeyFile,
+      userHandler, logStream};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
