@@ -17,6 +17,7 @@
 #include <Networking/NetAddress.h>
 
 #include <functional>
+#include <iostream>
 #include <memory>
 
 class Networking::TCP::TCPClient
@@ -24,7 +25,12 @@ class Networking::TCP::TCPClient
 public:
   TCPClient(NetAddress hostAddress,
             std::function<void(int)> userHandler,
-            std::function<void(const std::string&)> logStream);
+            // By default, simply send error messages to cerr.
+            std::function<void(const std::string&)> logStream
+            =[](const std::string& message)
+              {
+                std::cerr << message << '\n';
+              });
   void connect();
 
 private:

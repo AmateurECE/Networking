@@ -8,7 +8,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/05/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -22,14 +22,9 @@ int main()
       std::cerr << "Socket connected.";
     };
 
-  auto logFunction = [](const std::string& message)
-    {
-      std::cerr << message << '\n';
-    };
-
   using namespace Networking;
   NetAddress host{INADDR_LOOPBACK, 13001};
-  TCP::TCPClient client = TCP::TCPClient{host, handler, logFunction};
+  TCP::TCPClient client = TCP::TCPClient{host, handler};
   client.connect();
 }
 
