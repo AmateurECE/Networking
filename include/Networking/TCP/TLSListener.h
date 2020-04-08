@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/05/2020
+// LAST EDITED:     04/08/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -55,8 +55,6 @@ private:
   const bool m_useTwoWayAuthentication;
   std::function<void(SSL*,const NetAddress&)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
-
-  static bool hasInitializedOpenSSL;
 };
 
 struct Networking::TCP::TLSListener::TLSHandler

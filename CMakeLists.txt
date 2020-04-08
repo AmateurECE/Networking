@@ -7,7 +7,7 @@
 #
 # CREATED:          03/27/2020
 #
-# LAST EDITED:      04/05/2020
+# LAST EDITED:      04/08/2020
 ###
 
 cmake_minimum_required(VERSION 3.15.1)
@@ -19,6 +19,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -O3 --std=c++17")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -O0 --std=c++17")
 
 find_package(OpenSSL REQUIRED)
+string(REGEX MATCH "^[0-9]+\.([0-9]+)\..*" theMatch ${OPENSSL_VERSION})
+if(${CMAKE_MATCH_1} LESS "1")
+    message(FATAL_ERROR "OpenSSL version 1.1.0 or greater is required.")
+endif()
 
 include(./CMakeDefs.txt)
 

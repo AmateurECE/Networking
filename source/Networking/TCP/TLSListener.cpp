@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/05/2020
+// LAST EDITED:     04/08/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
@@ -26,8 +26,6 @@ std::string getSSLErrors()
   BIO_get_mem_data(bio, &buf);
   return std::string{buf};
 }
-
-bool Networking::TCP::TLSListener::hasInitializedOpenSSL = false;
 
 Networking::TCP::TLSListener
 ::TLSListener(unsigned int theClientAddresses, unsigned short thePort,
@@ -57,13 +55,6 @@ Networking::TCP::TLSListener::listen()
 
 SSL_CTX* Networking::TCP::TLSListener::createContext() const
 {
-  if (!hasInitializedOpenSSL)
-    {
-      hasInitializedOpenSSL = true;
-      SSL_load_error_strings();
-      OpenSSL_add_ssl_algorithms();
-    }
-
   SSL_CTX* context = nullptr;
 
   const SSL_METHOD* method = SSLv23_server_method();

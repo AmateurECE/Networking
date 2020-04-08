@@ -10,7 +10,7 @@
 #
 # CREATED:          04/04/2020
 #
-# LAST EDITED:      04/04/2020
+# LAST EDITED:      04/08/2020
 ###
 
 die()
@@ -27,14 +27,15 @@ read -r -d '' USAGE <<- EOF
 	build:             Build the build environment using 'docker build'
 EOF
 
-if [[ "x$1" = "x-h" || "x$1" = "x--help" ]]; then
+if [[ "x$1" = "x" || "x$1" = "x-h" || "x$1" = "x--help" ]]; then
     die 1 "$USAGE"
 fi
 
 CONTAINER=openssl
 
-if [[ "x$1" = "x" ]]; then
-    docker run -it --rm -v `realpath .`:/root --entrypoint="/bin/sh" $CONTAINER
+if [[ $1 = "run" ]]; then
+    docker run -it --rm -v `realpath .`:/root --entrypoint="/bin/sh" \
+           $CONTAINER "-c" "${@:2}"
 elif [[ $1 = "build" ]]; then
     docker build -t $CONTAINER .
 elif [[ $1 = "openssl" ]]; then
