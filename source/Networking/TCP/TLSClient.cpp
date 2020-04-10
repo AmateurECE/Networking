@@ -7,15 +7,15 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/09/2020
+// LAST EDITED:     04/10/2020
 ////
 
 #include <Networking/TCP/TLSClient.h>
+#include <Networking/TCP/TLSException.h>
 
 #include <sys/stat.h>
 
 #include <openssl/err.h>
-// #include <openss/x509.h>
 
 #define str(x) _str(x)
 #define _str(x) #x
@@ -166,34 +166,37 @@ void Networking::TCP::TLSClient::connect()
   if (1 != result)
     {
       result = SSL_get_verify_result(ssl);
-      throw std::runtime_error{std::string{__FILE__":" str(__LINE__) ":"}
+      throw TLSException{std::string{__FILE__":" str(__LINE__) ":"}
         + "Could not connect to host; error trace:\n" + getSSLErrors()
-          + "\n" + X509_verify_cert_error_string(result)};
+          + "\n" + X509_verify_cert_error_string(result), m_hostAddress};
     }
 
   result = BIO_do_handshake(stream);
   if (1 != result)
     {
-      throw std::runtime_error{std::string{__FILE__":" str(__LINE__) ":"}
-        + "Could not create TLS connection; error trace:\n" + getSSLErrors()};
+      throw TLSException{std::string{__FILE__":" str(__LINE__) ":"}
+        + "Could not create TLS connection; error trace:\n" + getSSLErrors(),
+          m_hostAddress};
     }
 
   // Verify that an x509 certificate WAS provided
   X509* cert = SSL_get_peer_certificate(ssl);
   if (nullptr == cert)
     {
-      throw std::runtime_error{std::string{__FILE__":" str(__LINE__) ":"}
+      throw TLSException{std::string{__FILE__":" str(__LINE__) ":"}
         + "Host did not provide an x509 certificate; error trace:\n"
-          + getSSLErrors()};
+          + getSSLErrors(),
+          m_hostAddress};
     }
   X509_free(cert);
 
   result = SSL_get_verify_result(ssl);
   if (X509_V_OK != result)
     {
-      throw std::runtime_error{std::string{__FILE__":" str(__LINE__) ":"}
+      throw TLSException{std::string{__FILE__":" str(__LINE__) ":"}
         + "Error occurred during chain verification; error trace:\n"
-          + getSSLErrors()};
+          + getSSLErrors(),
+          m_hostAddress};
     }
 
   // We have successfully connect to the client.

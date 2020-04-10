@@ -7,7 +7,7 @@
 //
 // CREATED:         03/27/2020
 //
-// LAST EDITED:     04/05/2020
+// LAST EDITED:     04/10/2020
 ////
 
 #ifndef __ET_NETWORKING__
@@ -43,7 +43,7 @@ namespace Networking
 
     class TLSListener;
     class TLSClient;
-    class ClientFailedTLSHandshakeException;
+    class TLSException;
   };
 };
 

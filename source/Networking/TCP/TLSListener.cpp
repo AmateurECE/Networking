@@ -7,12 +7,12 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/09/2020
+// LAST EDITED:     04/10/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
 #include <Networking/NetAddress.h>
-#include <Networking/TCP/ClientFailedTLSHandshakeException.h>
+#include <Networking/TCP/TLSException.h>
 #include <Networking/TCP/TLSListener.h>
 
 #include <openssl/ssl.h>
@@ -120,8 +120,7 @@ Networking::TCP::TLSListener::TLSHandler
         }
       else
         {
-          throw ClientFailedTLSHandshakeException(sslErrors,
-                                                  clientAddress);
+          throw TLSException(sslErrors, clientAddress);
         }
     }
 
