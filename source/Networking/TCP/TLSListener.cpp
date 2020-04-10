@@ -57,7 +57,7 @@ SSL_CTX* Networking::TCP::TLSListener::createContext() const
 {
   SSL_CTX* context = nullptr;
 
-  const SSL_METHOD* method = SSLv23_server_method();
+  const SSL_METHOD* method = TLS_server_method();
   context = SSL_CTX_new(method);
   if (!context)
     {
