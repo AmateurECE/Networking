@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/08/2020
+// LAST EDITED:     04/09/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
@@ -109,16 +109,18 @@ Networking::TCP::TLSListener::TLSHandler
   SSL_set_fd(sslRaw, socket);
   if (0 >= SSL_accept(sslRaw))
     {
-      m_logStream("Client " + clientAddress.getIPDotNotation()
-                  + " failed TLS handshake(" + getSSLErrors()
-                  + "). Severing connection.");
+      const std::string sslErrors = "Client "
+        + clientAddress.getIPDotNotation()
+        + " failed TLS handshake; error trace:\n" + getSSLErrors()
+        + "Severing connection.";
       if (m_handshakeFailureAction == HandshakeFailureAction::NOTHING)
         {
           return;
+          m_logStream(sslErrors);
         }
       else
         {
-          throw ClientFailedTLSHandshakeException(getSSLErrors(),
+          throw ClientFailedTLSHandshakeException(sslErrors,
                                                   clientAddress);
         }
     }
