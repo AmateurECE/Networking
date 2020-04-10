@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/10/2020
 ////
 
 #include <Networking/NetAddress.h>
@@ -24,11 +24,53 @@ Networking::NetAddress::NetAddress(struct sockaddr_in address)
   : m_address{address}
 {}
 
-Networking::NetAddress::NetAddress(const std::string& ipOrHostname)
+struct sockaddr_in
+Networking::NetAddress
+::getSockAddr(const std::string& ipOrHostname,
+              unsigned short portHostOrder) const
 {
-  throw std::logic_error{__FILE__":" str(__LINE__) ": Unimplemented"
-      " constructor NetAddress(const std::string&)"};
+  struct sockaddr_in address;
+  memset(&address, 0, sizeof(address));
+  address.sin_family = AF_INET;
+  address.sin_port = htons(portHostOrder);
+
+  int result = inet_pton(AF_INET, ipOrHostname.c_str(), &(address.sin_addr));
+  if (1 != result)
+    {
+      throw std::invalid_argument{"Value \"" + ipOrHostname
+          + "\" is not a valid IP address."};
+    }
+
+  return address;
 }
+
+Networking::NetAddress::NetAddress(const std::string& hostString)
+{
+  std::string::size_type colonIndex = std::string::npos;
+  colonIndex = hostString.find(':');
+
+  if (std::string::npos == colonIndex)
+    {
+      throw std::invalid_argument{"NetAddress(const std::string& hostString):"
+          " hostString must be in the form"
+          " \"<IPv4 | IPv6 | Hostname>:<port>\""};
+    }
+
+  int portNumberInt = std::stoi(hostString.substr(colonIndex + 1));
+  if (portNumberInt > std::numeric_limits<unsigned short>::max())
+    {
+      throw std::out_of_range{"Value \"" + hostString.substr(colonIndex + 1)
+          + "\" is not in the range of valid port numbers."};
+    }
+
+  m_address = getSockAddr(hostString.substr(0, colonIndex),
+                          static_cast<unsigned short>(portNumberInt));
+}
+
+Networking::NetAddress::NetAddress(const std::string& ipOrHostname,
+                                   unsigned short portHostOrder)
+  : m_address{getSockAddr(ipOrHostname, portHostOrder)}
+{}
 
 Networking::NetAddress::NetAddress(unsigned int ipHostOrder,
                                    unsigned short portHostOrder)

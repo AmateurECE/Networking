@@ -23,7 +23,7 @@ int main()
   using namespace Networking::TCP;
 
   // Connect to localhost:13001
-  Networking::NetAddress host{INADDR_LOOPBACK, 13001};
+  Networking::NetAddress host{"127.0.0.1", 13001};
 
   // Create the client.
   TLSClient client = TLSClient::Builder()
