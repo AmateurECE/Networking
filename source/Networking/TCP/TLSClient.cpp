@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 
 #include <openssl/err.h>
+// #include <openss/x509.h>
 
 #define str(x) _str(x)
 #define _str(x) #x
@@ -164,8 +165,10 @@ void Networking::TCP::TLSClient::connect()
   result = BIO_do_connect(stream);
   if (1 != result)
     {
+      result = SSL_get_verify_result(ssl);
       throw std::runtime_error{std::string{__FILE__":" str(__LINE__) ":"}
-        + "Could not connect to host; error trace:\n" + getSSLErrors()};
+        + "Could not connect to host; error trace:\n" + getSSLErrors()
+          + "\n" + X509_verify_cert_error_string(result)};
     }
 
   result = BIO_do_handshake(stream);
