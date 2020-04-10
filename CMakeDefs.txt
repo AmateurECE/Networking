@@ -7,7 +7,7 @@
 #
 # CREATED:          03/27/2020
 #
-# LAST EDITED:      04/05/2020
+# LAST EDITED:      04/09/2020
 ###
 
 set(NETWORKING_SOURCES
@@ -19,6 +19,7 @@ set(NETWORKING_SOURCES
     source/Networking/NetAddress.cpp
     source/Networking/TCP/TLSListener.cpp
     source/Networking/TCP/ClientFailedTLSHandshakeException.cpp
+    source/Networking/TCP/TLSClient.cpp
 )
 
 ###############################################################################
