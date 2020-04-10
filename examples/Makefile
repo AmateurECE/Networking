@@ -8,7 +8,7 @@
 #
 # CREATED:	    04/03/2020
 #
-# LAST EDITED:	    04/04/2020
+# LAST EDITED:	    04/09/2020
 ###
 
 CC=/usr/bin/g++
@@ -18,11 +18,12 @@ LDFLAGS=-lnetworking -L ../build
 SRCS+=SimpleServer.cpp
 SRCS+=SimpleClient.cpp
 SRCS+=TlsServer.cpp
+SRCS+=TlsClient.cpp
 OBJS=${patsubst %.cpp,%.o,${SRCS}}
 
 .PHONY: force
 
-all: SimpleServer SimpleClient TlsServer
+all: SimpleServer SimpleClient TlsServer TlsClient
 
 SimpleServer: SimpleServer.o
 	$(CC) $^ $(LDFLAGS) -o $@
@@ -33,6 +34,11 @@ SimpleClient: SimpleClient.o
 TlsServer: CPPFLAGS+= `pkg-config --cflags openssl`
 TlsServer: LDFLAGS+= `pkg-config --libs openssl`
 TlsServer: TlsServer.o
+	$(CC) $^ $(LDFLAGS) -o $@
+
+TlsClient: CPPFLAGS+= `pkg-config --cflags openssl`
+TlsClient: LDFLAGS+= `pkg-config --libs openssl`
+TlsClient: TlsClient.o
 	$(CC) $^ $(LDFLAGS) -o $@
 
 ${OBJS}: force ${SRCS} ../build/libnetworking.a

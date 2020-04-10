@@ -26,16 +26,21 @@ public:
   TLSClient(NetAddress hostAddress,
             std::function<void(BIO*)> userHandler,
             bool useTwoWayAuthentication = false,
+
+            // Pass "" to use default CA certificate paths.
+            std::string customCACertificatePath = "",
+
             // By default, simply send error messages to cerr.
             std::function<void(const std::string&)> logStream
             =[](const std::string& message)
               {
                 std::cerr << message << '\n';
               });
+
   void connect();
 
 private:
-  SSL_CTX* createContext();
+  SSL_CTX* createContext(std::string);
 
   std::unique_ptr<SSL_CTX, std::function<void(SSL_CTX*)>> m_sslContext;
 
