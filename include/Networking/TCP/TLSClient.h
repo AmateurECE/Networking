@@ -7,7 +7,7 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/09/2020
+// LAST EDITED:     04/10/2020
 ////
 
 #ifndef __ET_TLSCLIENT__
@@ -25,19 +25,13 @@ class Networking::TCP::TLSClient
 public:
   TLSClient(NetAddress hostAddress,
             std::function<void(BIO*)> userHandler,
-            bool useTwoWayAuthentication = false,
-
-            // Pass "" to use default CA certificate paths.
-            std::string customCACertificatePath = "",
-
-            // By default, simply send error messages to cerr.
-            std::function<void(const std::string&)> logStream
-            =[](const std::string& message)
-              {
-                std::cerr << message << '\n';
-              });
+            bool useTwoWayAuthentication,
+            std::string customCACertificatePath,
+            std::function<void(const std::string&)> logStream);
 
   void connect();
+
+  class Builder;
 
 private:
   SSL_CTX* createContext(std::string);
@@ -48,6 +42,34 @@ private:
   std::function<void(BIO*)> m_userHandler;
   const bool m_useTwoWayAuthentication;
   std::function<void(const std::string&)> m_logStream;
+};
+
+class Networking::TCP::TLSClient::Builder
+{
+public:
+  Builder() = default;
+  Builder setHostAddress(NetAddress);
+  Builder setUserHandler(std::function<void(BIO*)>);
+  Builder setTwoWayAuthentication(bool);
+  Builder setCustomCACertificatePath(std::string);
+  Builder setLogStream(std::function<void(const std::string&)>);
+
+  TLSClient build() const;
+
+private:
+  NetAddress m_hostAddress = NetAddress{INADDR_LOOPBACK, 443};
+  std::function<void(BIO*)> m_userHandler = [](BIO*){ return; };
+  bool m_useTwoWayAuthentication = false;
+
+  // Pass "" to use default CA certificate paths.
+  std::string m_customCACertificatePath = "";
+
+  // By default, simply send error messages to cerr.
+  std::function<void(const std::string&)> m_logStream =
+    [](const std::string& message)
+  {
+    std::cerr << message << '\n';
+  };
 };
 
 #endif // __ET_TLSCLIENT__

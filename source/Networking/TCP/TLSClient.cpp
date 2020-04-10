@@ -204,5 +204,40 @@ void Networking::TCP::TLSClient::connect()
   m_userHandler(stream);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// TLSClient::Builder
+////
+
+Networking::TCP::TLSClient::Builder
+Networking::TCP::TLSClient::Builder
+::setHostAddress(NetAddress hostAddress)
+{ m_hostAddress = hostAddress; return *this; }
+
+Networking::TCP::TLSClient::Builder
+Networking::TCP::TLSClient::Builder
+::setUserHandler(std::function<void(BIO*)> userHandler)
+{ m_userHandler = userHandler; return *this; }
+
+Networking::TCP::TLSClient::Builder
+Networking::TCP::TLSClient::Builder
+::setTwoWayAuthentication(bool useTwoWayAuthentication)
+{ m_useTwoWayAuthentication = useTwoWayAuthentication; return *this; }
+
+Networking::TCP::TLSClient::Builder
+Networking::TCP::TLSClient::Builder
+::setCustomCACertificatePath(std::string customCACertificatePath)
+{ m_customCACertificatePath = customCACertificatePath; return *this; }
+
+Networking::TCP::TLSClient::Builder
+Networking::TCP::TLSClient::Builder
+::setLogStream(std::function<void(const std::string&)> logStream)
+{ m_logStream = logStream; return *this; }
+
+Networking::TCP::TLSClient
+Networking::TCP::TLSClient::Builder::build() const
+{
+  return TLSClient{m_hostAddress, m_userHandler, m_useTwoWayAuthentication,
+      m_customCACertificatePath, m_logStream};
+}
 
 ///////////////////////////////////////////////////////////////////////////////
