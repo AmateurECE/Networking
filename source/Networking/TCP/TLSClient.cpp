@@ -7,7 +7,7 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/TCP/TLSClient.h>
@@ -30,7 +30,7 @@ static std::string getSSLErrors()
 }
 
 Networking::TCP::TLSClient
-::TLSClient(NetAddress hostAddress, std::function<void(BIO*)> userHandler,
+::TLSClient(NetworkHost hostAddress, std::function<void(BIO*)> userHandler,
             bool useTwoWayAuthentication, std::string customCACertificatePath,
             std::function<void(const std::string&)> logStream)
   : m_sslContext{createContext(customCACertificatePath), [](SSL_CTX* ctx)
@@ -210,7 +210,7 @@ void Networking::TCP::TLSClient::connect()
 
 Networking::TCP::TLSClient::Builder
 Networking::TCP::TLSClient::Builder
-::setHostAddress(NetAddress hostAddress)
+::setHostAddress(NetworkHost hostAddress)
 { m_hostAddress = hostAddress; return *this; }
 
 Networking::TCP::TLSClient::Builder

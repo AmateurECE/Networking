@@ -15,14 +15,14 @@
 //
 // CREATED:         04/05/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #ifndef __ET_TLSEXCEPTION__
 #define __ET_TLSEXCEPTION__
 
 #include <namespaces/Networking.h>
-#include <Networking/NetAddress.h>
+#include <Networking/NetworkHost.h>
 
 #include <exception>
 #include <string>
@@ -31,13 +31,13 @@ class Networking::TCP::TLSException
   : public std::exception
 {
 public:
-  TLSException(std::string what, NetAddress client);
+  TLSException(std::string what, NetworkHost client);
   virtual const char* what() const noexcept override;
-  const NetAddress& getClientAddress() const;
+  const NetworkHost& getClientAddress() const;
 
 private:
   std::string m_what;
-  NetAddress m_client;
+  NetworkHost m_client;
 };
 
 #endif // __ET_TLSEXCEPTION__

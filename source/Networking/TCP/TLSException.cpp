@@ -7,13 +7,13 @@
 //
 // CREATED:         04/05/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/TCP/TLSException.h>
 
 Networking::TCP::TLSException
-::TLSException(std::string what, NetAddress client)
+::TLSException(std::string what, NetworkHost client)
   : m_what{what}, m_client{client}
 {}
 
@@ -24,7 +24,7 @@ Networking::TCP::TLSException
   return m_what.c_str();
 }
 
-const Networking::NetAddress&
+const Networking::NetworkHost&
 Networking::TCP::TLSException
 ::getClientAddress() const
 {

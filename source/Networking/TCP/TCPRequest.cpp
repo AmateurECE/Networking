@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/TCP/TCPRequest.h>
@@ -15,8 +15,8 @@
 #include <unistd.h>
 
 Networking::TCP::TCPRequest
-::TCPRequest(int socket, NetAddress connectingAddress,
-             std::function<void(unsigned int,const NetAddress&)>& userHandler,
+::TCPRequest(int socket, NetworkHost connectingAddress,
+             std::function<void(unsigned int,const NetworkHost&)>& userHandler,
              std::function<void(const std::string&)> logStream)
   : m_socket{0}, m_connectingAddress{connectingAddress},
     m_userHandler{userHandler}, m_logStream{logStream}

@@ -7,11 +7,11 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
-#include <Networking/NetAddress.h>
+#include <Networking/NetworkHost.h>
 #include <Networking/TCP/TLSException.h>
 #include <Networking/TCP/TLSListener.h>
 
@@ -32,7 +32,7 @@ Networking::TCP::TLSListener
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               bool useTwoWayAuthentication, HandshakeFailureAction action,
               std::string certificateFile, std::string privateKeyFile,
-              std::function<void(SSL*,const NetAddress&)> userHandler,
+              std::function<void(SSL*,const NetworkHost&)> userHandler,
               std::function<void(const std::string&)> logStream)
   : m_certificateFile{certificateFile}, m_privateKeyFile{privateKeyFile},
     m_sslContext{createContext(), [](SSL_CTX* context)
@@ -85,7 +85,7 @@ SSL_CTX* Networking::TCP::TLSListener::createContext() const
 
 Networking::TCP::TLSListener::TLSHandler
 ::TLSHandler(std::shared_ptr<SSL_CTX> sslContext,
-             std::function<void(SSL*,const NetAddress&)> userHandler,
+             std::function<void(SSL*,const NetworkHost&)> userHandler,
              HandshakeFailureAction handshakeFailureAction,
              std::function<void(const std::string&)> logStream)
   : m_ssl{nullptr}, m_sslContext{sslContext}, m_userHandler{userHandler},
@@ -94,7 +94,7 @@ Networking::TCP::TLSListener::TLSHandler
 
 void
 Networking::TCP::TLSListener::TLSHandler
-::operator()(unsigned int socket, const NetAddress& clientAddress)
+::operator()(unsigned int socket, const NetworkHost& clientAddress)
 {
   // Use the shared_ptr here because it allows for automatic destruction in
   // case the flow of normal logic is interrupted (e.g. by exception).

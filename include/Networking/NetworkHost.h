@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            NetAddress.h
+// NAME:            NetworkHost.h
 //
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //
@@ -8,7 +8,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #ifndef __ET_NETADDRESS__
@@ -20,20 +20,20 @@
 
 #include <string>
 
-class Networking::NetAddress
+class Networking::NetworkHost
 {
 public:
-  NetAddress(struct sockaddr_in);
+  NetworkHost(struct sockaddr_in);
 
   // Must be in the form "<IPv4 | IPv6 | Hostname>:<port>"
   // If a hostname is given, the ctor will attempt to resolve it using DNS.
-  NetAddress(const std::string& hostString);
+  NetworkHost(const std::string& hostString);
 
   // ipOrHostname may be in the form IPv4 or IPv6 or Hostname
   // If a hostname is given, the ctor will attempt to resolve it using DNS.
-  NetAddress(const std::string& ipOrHostname, unsigned short portHostOrder);
+  NetworkHost(const std::string& ipOrHostname, unsigned short portHostOrder);
 
-  NetAddress(unsigned int ipHostOrder, unsigned short portHostOrder);
+  NetworkHost(unsigned int ipHostOrder, unsigned short portHostOrder);
 
   unsigned int getIPHostOrder() const;
   std::string getIPDotNotation() const;

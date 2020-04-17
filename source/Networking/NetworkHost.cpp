@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            NetAddress.cpp
+// NAME:            NetworkHost.cpp
 //
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //
-// DESCRIPTION:     Implementation of the NetAddress class.
+// DESCRIPTION:     Implementation of the NetworkHost class.
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
-#include <Networking/NetAddress.h>
+#include <Networking/NetworkHost.h>
 
 #include <arpa/inet.h>
 #include <string.h>
@@ -20,12 +20,12 @@
 #define str(x) str_Impl(x)
 #define str_Impl(x) #x
 
-Networking::NetAddress::NetAddress(struct sockaddr_in address)
+Networking::NetworkHost::NetworkHost(struct sockaddr_in address)
   : m_address{address}
 {}
 
 struct sockaddr_in
-Networking::NetAddress
+Networking::NetworkHost
 ::getSockAddr(const std::string& ipOrHostname,
               unsigned short portHostOrder) const
 {
@@ -44,14 +44,14 @@ Networking::NetAddress
   return address;
 }
 
-Networking::NetAddress::NetAddress(const std::string& hostString)
+Networking::NetworkHost::NetworkHost(const std::string& hostString)
 {
   std::string::size_type colonIndex = std::string::npos;
   colonIndex = hostString.find(':');
 
   if (std::string::npos == colonIndex)
     {
-      throw std::invalid_argument{"NetAddress(const std::string& hostString):"
+      throw std::invalid_argument{"NetworkHost(const std::string& hostString):"
           " hostString must be in the form"
           " \"<IPv4 | IPv6 | Hostname>:<port>\""};
     }
@@ -67,12 +67,12 @@ Networking::NetAddress::NetAddress(const std::string& hostString)
                           static_cast<unsigned short>(portNumberInt));
 }
 
-Networking::NetAddress::NetAddress(const std::string& ipOrHostname,
+Networking::NetworkHost::NetworkHost(const std::string& ipOrHostname,
                                    unsigned short portHostOrder)
   : m_address{getSockAddr(ipOrHostname, portHostOrder)}
 {}
 
-Networking::NetAddress::NetAddress(unsigned int ipHostOrder,
+Networking::NetworkHost::NetworkHost(unsigned int ipHostOrder,
                                    unsigned short portHostOrder)
 {
   memset(&m_address, 0, sizeof(m_address));
@@ -81,12 +81,12 @@ Networking::NetAddress::NetAddress(unsigned int ipHostOrder,
   m_address.sin_port = htons(portHostOrder);
 }
 
-unsigned int Networking::NetAddress::getIPHostOrder() const
+unsigned int Networking::NetworkHost::getIPHostOrder() const
 {
   return ntohl(m_address.sin_addr.s_addr);
 }
 
-std::string Networking::NetAddress::getIPDotNotation() const
+std::string Networking::NetworkHost::getIPDotNotation() const
 {
   char nameBuffer[INET_ADDRSTRLEN];
   memset(nameBuffer, 0, sizeof(nameBuffer));
@@ -102,12 +102,12 @@ std::string Networking::NetAddress::getIPDotNotation() const
   return std::string{const_cast<const char*>(nameBuffer)};
 }
 
-unsigned short Networking::NetAddress::getPortHostOrder() const
+unsigned short Networking::NetworkHost::getPortHostOrder() const
 {
   return ntohs(m_address.sin_port);
 }
 
-const struct sockaddr_in& Networking::NetAddress::getSockAddr() const
+const struct sockaddr_in& Networking::NetworkHost::getSockAddr() const
 {
   return const_cast<const sockaddr_in&>(m_address);
 }

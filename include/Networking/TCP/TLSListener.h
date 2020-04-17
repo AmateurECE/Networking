@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/08/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -35,7 +35,7 @@ public:
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               bool useTwoWayAuthentication, HandshakeFailureAction action,
               std::string certficateFile, std::string privateKeyFile,
-              std::function<void(SSL*,const NetAddress&)> userHandler,
+              std::function<void(SSL*,const NetworkHost&)> userHandler,
               std::function<void(const std::string&)> logStream);
 
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
@@ -53,22 +53,22 @@ private:
   std::unique_ptr<struct TLSHandler> m_tlsHandler;
   TCPListener m_listener;
   const bool m_useTwoWayAuthentication;
-  std::function<void(SSL*,const NetAddress&)> m_userHandler;
+  std::function<void(SSL*,const NetworkHost&)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 };
 
 struct Networking::TCP::TLSListener::TLSHandler
 {
   TLSHandler(std::shared_ptr<SSL_CTX> sslContext,
-             std::function<void(SSL*,const NetAddress&)> userHandler,
+             std::function<void(SSL*,const NetworkHost&)> userHandler,
              HandshakeFailureAction handshakeFailureAction,
              std::function<void(const std::string&)> logStream);
-  void operator()(unsigned int, const NetAddress&);
+  void operator()(unsigned int, const NetworkHost&);
 
 private:
   std::shared_ptr<SSL> m_ssl;
   std::shared_ptr<SSL_CTX> m_sslContext;
-  std::function<void(SSL*,const NetAddress&)> m_userHandler;
+  std::function<void(SSL*,const NetworkHost&)> m_userHandler;
   HandshakeFailureAction m_handshakeFailureAction;
   std::function<void(const std::string&)> m_logStream;
 };
@@ -86,7 +86,7 @@ public:
   Builder setHandshakeFailureAction(HandshakeFailureAction);
   Builder setCertificateFile(std::string);
   Builder setPrivateKeyFile(std::string);
-  using UserHandler = std::function<void(SSL*,const NetAddress&)>;
+  using UserHandler = std::function<void(SSL*,const NetworkHost&)>;
   Builder setUserHandler(UserHandler userHandler);
   Builder setLogStream(std::function<void(const std::string&)> logStream);
 
@@ -102,7 +102,7 @@ private:
   HandshakeFailureAction failureAction = HandshakeFailureAction::NOTHING;
   std::string certificateFile = ""; // NO DEFAULT
   std::string privateKeyFile = ""; // NO DEFAULT
-  UserHandler userHandler = [](SSL*,const NetAddress&){ return; };
+  UserHandler userHandler = [](SSL*,const NetworkHost&){ return; };
   std::function<void(const std::string&)> logStream =
     [](const std::string& message)
   {

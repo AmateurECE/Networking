@@ -7,7 +7,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/04/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -18,7 +18,7 @@
 #include <unistd.h>
 
 Networking::TCP::TCPClient
-::TCPClient(NetAddress hostAddress,
+::TCPClient(NetworkHost hostAddress,
             std::function<void(int)> userHandler,
             std::function<void(const std::string&)> logStream)
   : m_socket{0}, m_hostAddress{hostAddress}, m_userHandler{userHandler},

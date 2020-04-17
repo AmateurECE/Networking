@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/05/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
@@ -25,7 +25,7 @@
 Networking::TCP::TCPListener
 ::TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              std::function<void(unsigned int,const NetAddress&)> userHandler,
+              std::function<void(unsigned int,const NetworkHost&)> userHandler,
               std::function<void(const std::string&)> logStream)
   : m_listeningSocket{0}, m_userHandler{userHandler}, m_logStream{logStream}
 {
@@ -107,7 +107,7 @@ Networking::TCP::TCPListener::listen()
   try
     {
       return std::make_unique<TCP::TCPRequest>(receivingSocket,
-                                               NetAddress{connectingEntity},
+                                               NetworkHost{connectingEntity},
                                                m_userHandler,
                                                m_logStream);
     }

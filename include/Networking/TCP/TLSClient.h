@@ -7,14 +7,14 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #ifndef __ET_TLSCLIENT__
 #define __ET_TLSCLIENT__
 
 #include <namespaces/Networking.h>
-#include <Networking/NetAddress.h>
+#include <Networking/NetworkHost.h>
 
 #include <iostream>
 
@@ -23,7 +23,7 @@
 class Networking::TCP::TLSClient
 {
 public:
-  TLSClient(NetAddress hostAddress,
+  TLSClient(NetworkHost hostAddress,
             std::function<void(BIO*)> userHandler,
             bool useTwoWayAuthentication,
             std::string customCACertificatePath,
@@ -38,7 +38,7 @@ private:
 
   std::unique_ptr<SSL_CTX, std::function<void(SSL_CTX*)>> m_sslContext;
 
-  NetAddress m_hostAddress;
+  NetworkHost m_hostAddress;
   std::function<void(BIO*)> m_userHandler;
   const bool m_useTwoWayAuthentication;
   std::function<void(const std::string&)> m_logStream;
@@ -48,7 +48,7 @@ class Networking::TCP::TLSClient::Builder
 {
 public:
   Builder() = default;
-  Builder setHostAddress(NetAddress);
+  Builder setHostAddress(NetworkHost);
   Builder setUserHandler(std::function<void(BIO*)>);
   Builder setTwoWayAuthentication(bool);
   Builder setCustomCACertificatePath(std::string);
@@ -57,7 +57,7 @@ public:
   TLSClient build() const;
 
 private:
-  NetAddress m_hostAddress = NetAddress{INADDR_LOOPBACK, 443};
+  NetworkHost m_hostAddress = NetworkHost{INADDR_LOOPBACK, 443};
   std::function<void(BIO*)> m_userHandler = [](BIO*){ return; };
   bool m_useTwoWayAuthentication = false;
 
