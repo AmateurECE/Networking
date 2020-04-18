@@ -41,13 +41,12 @@ public:
 
   class NetworkHostConstIter;
   typedef NetworkHostConstIter const_iterator;
+  const_iterator begin() const;
+  const_iterator end() const;
   const_iterator cbegin() const;
   const_iterator cend() const;
 
 private:
-
-  NetworkAddress getNetworkAddress(std::string ipAddress,
-                                   unsigned short portHostOrder) const;
   void getAddresses(std::string hostname, unsigned short portHostOrder);
 
   std::list<NetworkAddress> m_addresses;
@@ -63,8 +62,8 @@ public:
   NetworkHostConstIter(std::list<NetworkAddress>::const_iterator);
   NetworkHostConstIter(const NetworkHostConstIter&) = default;
   NetworkHostConstIter& operator=(const NetworkHostConstIter& that) = default;
-  NetworkHostConstIter& operator++(); // Postfix increment
-  NetworkHostConstIter operator++(int); // Prefix increment
+  NetworkHostConstIter& operator++(); // Prefix increment
+  NetworkHostConstIter operator++(int); // Postfix increment
   bool operator==(const NetworkHostConstIter& that) const;
   bool operator!=(const NetworkHostConstIter& that) const;
   NetworkAddress operator*() const;

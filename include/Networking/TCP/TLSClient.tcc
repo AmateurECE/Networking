@@ -206,14 +206,13 @@ void Networking::TCP::TLSClient<HostType>::connect()
   m_userHandler(stream);
 }
 
-// TODO: Provide specialization for NetworkHost
-// template<>
-// std::string Networking::TCP::TLSClient<Networking::NetworkHost>
-// ::getHostString() const
-// {
-//   return m_hostAddress.getHostname() + ":"
-//     + std::to_string(m_hostAddress.getPortHostOrder());
-// }
+template<>
+std::string Networking::TCP::TLSClient<Networking::NetworkHost>
+::getHostString() const
+{
+  return m_hostAddress.getHostname() + ":"
+    + std::to_string(m_hostAddress.getPortHostOrder());
+}
 
 template<>
 std::string Networking::TCP::TLSClient<Networking::NetworkAddress>
@@ -230,6 +229,11 @@ std::string Networking::TCP::TLSClient<Networking::NetworkAddress>
 template<>
 Networking::TCP::TLSClient<Networking::NetworkAddress>::Builder::Builder()
   : m_hostAddress{INADDR_LOOPBACK, 443}
+{}
+
+template<>
+Networking::TCP::TLSClient<Networking::NetworkHost>::Builder::Builder()
+  : m_hostAddress{"localhost", 443}
 {}
 
 template<class HostType>

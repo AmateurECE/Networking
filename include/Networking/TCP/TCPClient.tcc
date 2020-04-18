@@ -38,11 +38,11 @@ Networking::TCP::TCPClient<HostType>
   *m_socket = socket;
 }
 
-template<class HostType>
-void Networking::TCP::TCPClient<HostType>::connect()
+template<>
+void Networking::TCP::TCPClient<Networking::NetworkAddress>::connect()
 {
   errno = 0;
-  const struct sockaddr_in& hostAddress = getHostAddress();
+  const struct sockaddr_in& hostAddress = m_hostAddress.getSockAddr();
 
   if (-1 == ::connect(*m_socket,
                       reinterpret_cast<const struct sockaddr*>(&hostAddress),
@@ -54,13 +54,35 @@ void Networking::TCP::TCPClient<HostType>::connect()
   m_userHandler(*m_socket);
 }
 
-// TODO: Write a specialization for NetworkHost
+// TODO: Change user handler in TCP/TLSClient to take HostType.
+//   This is for the case where the user is connecting to a hostname that
+//   resolves to multiple IP addresses. The user may want to know to which
+//   specific host are they talking to.
+// TODO: Change all <*.h> includes to <c*> includes.
 template<>
-const struct sockaddr_in&
-Networking::TCP::TCPClient<Networking::NetworkAddress>
-::getHostAddress() const
+void Networking::TCP::TCPClient<Networking::NetworkHost>::connect()
 {
-  return m_hostAddress.getSockAddr();
+  std::string errorStack = "Host Connect Failures:";
+
+  for (auto const& address : m_hostAddress)
+    {
+      const struct sockaddr& socketAddress
+        = reinterpret_cast<const struct sockaddr&>(address.getSockAddr());
+      errno = 0;
+      if (-1 == ::connect(*m_socket, &socketAddress,
+                          sizeof(struct sockaddr_in)))
+        {
+          errorStack += "\n" + address.string() + " (errno="
+            + std::to_string(errno) + ") " + std::string{strerror(errno)};
+        }
+      else
+        {
+          m_userHandler(*m_socket);
+          return;
+        }
+    }
+
+  throw std::system_error{errno, std::generic_category(), errorStack};
 }
 
 ///////////////////////////////////////////////////////////////////////////////

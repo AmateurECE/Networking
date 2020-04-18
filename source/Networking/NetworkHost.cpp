@@ -40,8 +40,8 @@ Networking::NetworkHost::NetworkHost(std::string hostString)
   try
     {
       m_addresses.push_back
-        (getNetworkAddress(hostString.substr(0, colonIndex),
-                           static_cast<unsigned short>(portNumberInt)));
+        (NetworkAddress(hostString.substr(0, colonIndex),
+                        static_cast<unsigned short>(portNumberInt)));
     }
   catch (const std::invalid_argument& e)
     {
@@ -56,7 +56,7 @@ Networking::NetworkHost
 {
   try
     {
-      m_addresses.push_back(getNetworkAddress(ipOrHostname, portHostOrder));
+      m_addresses.push_back(NetworkAddress(ipOrHostname, portHostOrder));
     }
   catch (const std::invalid_argument& e)
     {
@@ -89,8 +89,50 @@ Networking::NetworkHost::cend() const
   return const_iterator{m_addresses.cend()};
 }
 
+Networking::NetworkHost::const_iterator
+Networking::NetworkHost::begin() const
+{
+  return cbegin();
+}
+
+Networking::NetworkHost::const_iterator
+Networking::NetworkHost::end() const
+{
+  return cend();
+}
+
 void Networking::NetworkHost
 ::getAddresses(std::string hostname, unsigned short portHostOrder)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+// NetworkHostConstIter
+////
+
+Networking::NetworkHost::NetworkHostConstIter
+::NetworkHostConstIter(std::list<Networking::NetworkAddress>::const_iterator)
+{}
+
+Networking::NetworkAddress
+Networking::NetworkHost::NetworkHostConstIter::operator*() const
+{}
+
+Networking::NetworkHost::NetworkHostConstIter&
+Networking::NetworkHost::NetworkHostConstIter
+::operator++() // Prefix increment
+{}
+
+Networking::NetworkHost::NetworkHostConstIter
+Networking::NetworkHost::NetworkHostConstIter
+::operator++(int) // Postfix increment
+{}
+
+bool Networking::NetworkHost::NetworkHostConstIter
+::operator==(const NetworkHostConstIter& that) const
+{}
+
+bool Networking::NetworkHost::NetworkHostConstIter
+::operator!=(const NetworkHostConstIter& that) const
 {}
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -35,8 +35,6 @@ public:
   void connect();
 
 private:
-  const struct sockaddr_in& getHostAddress() const;
-
   std::shared_ptr<int> m_socket;
   HostType m_hostAddress;
   std::function<void(int)> m_userHandler;
