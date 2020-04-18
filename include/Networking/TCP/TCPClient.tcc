@@ -17,8 +17,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-Networking::TCP::TCPClient
-::TCPClient(NetworkHost hostAddress,
+template<class HostType>
+Networking::TCP::TCPClient<HostType>
+::TCPClient(HostType hostAddress,
             std::function<void(int)> userHandler,
             std::function<void(const std::string&)> logStream)
   : m_socket{0}, m_hostAddress{hostAddress}, m_userHandler{userHandler},
@@ -37,7 +38,8 @@ Networking::TCP::TCPClient
   *m_socket = socket;
 }
 
-void Networking::TCP::TCPClient::connect()
+template<>
+void Networking::TCP::TCPClient<Networking::NetworkHost>::connect()
 {
   errno = 0;
   const struct sockaddr_in& hostAddress = m_hostAddress.getSockAddr();

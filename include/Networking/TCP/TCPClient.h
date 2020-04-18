@@ -20,10 +20,11 @@
 #include <iostream>
 #include <memory>
 
+template<class HostType>
 class Networking::TCP::TCPClient
 {
 public:
-  TCPClient(NetworkHost hostAddress,
+  TCPClient(HostType hostAddress,
             std::function<void(int)> userHandler,
             // By default, simply send error messages to cerr.
             std::function<void(const std::string&)> logStream
@@ -35,10 +36,12 @@ public:
 
 private:
   std::shared_ptr<int> m_socket;
-  NetworkHost m_hostAddress;
+  HostType m_hostAddress;
   std::function<void(int)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 };
+
+#include <Networking/TCP/TCPClient.tcc>
 
 #endif // __ET_TCPCLIENT__
 

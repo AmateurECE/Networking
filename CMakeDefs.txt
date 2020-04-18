@@ -13,7 +13,6 @@
 set(NETWORKING_SOURCES
     source/Networking/BlockingServer.cpp
     source/Networking/DelegatorSTSP.cpp
-    source/Networking/TCP/TCPClient.cpp
     source/Networking/NetworkHost.cpp
     source/Networking/TCP/TLSException.cpp
     source/Networking/TCP/TLSClient.cpp
