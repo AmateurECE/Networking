@@ -33,6 +33,9 @@ public:
 
   std::string string() const;
 
+  bool operator==(const NetworkAddress&) const;
+  bool operator!=(const NetworkAddress&) const;
+
 private:
   struct sockaddr_in m_address;
 };

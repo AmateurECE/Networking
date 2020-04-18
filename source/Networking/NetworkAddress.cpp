@@ -85,4 +85,17 @@ std::string Networking::NetworkAddress::string() const
     + ")";
 }
 
+bool Networking::NetworkAddress
+::operator==(const Networking::NetworkAddress& that) const
+{
+  return
+    m_address.sin_family == that.m_address.sin_family
+    && m_address.sin_port == that.m_address.sin_port
+    && m_address.sin_addr.s_addr == that.m_address.sin_addr.s_addr;
+}
+
+bool Networking::NetworkAddress
+::operator!=(const Networking::NetworkAddress& that) const
+{ return !operator==(that); }
+
 ///////////////////////////////////////////////////////////////////////////////

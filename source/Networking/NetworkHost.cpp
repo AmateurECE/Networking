@@ -64,9 +64,6 @@ Networking::NetworkHost
     }
 }
 
-std::string Networking::NetworkHost::getHostname() const
-{}
-
 unsigned short Networking::NetworkHost::getPortHostOrder() const
 {
   return (*cbegin()).getPortHostOrder();
@@ -101,6 +98,9 @@ Networking::NetworkHost::end() const
   return cend();
 }
 
+std::string Networking::NetworkHost::getHostname() const
+{}
+
 void Networking::NetworkHost
 ::getAddresses(std::string hostname, unsigned short portHostOrder)
 {}
@@ -109,30 +109,33 @@ void Networking::NetworkHost
 // NetworkHostConstIter
 ////
 
+// TODO: Look for using decls in template headers.
+using ListIterator = std::list<Networking::NetworkAddress>::const_iterator;
 Networking::NetworkHost::NetworkHostConstIter
-::NetworkHostConstIter(std::list<Networking::NetworkAddress>::const_iterator)
+::NetworkHostConstIter(ListIterator iterator)
+  : m_iterator{iterator}
 {}
 
 Networking::NetworkAddress
 Networking::NetworkHost::NetworkHostConstIter::operator*() const
-{}
+{ return *m_iterator; }
 
 Networking::NetworkHost::NetworkHostConstIter&
 Networking::NetworkHost::NetworkHostConstIter
 ::operator++() // Prefix increment
-{}
+{ ++m_iterator; return *this; }
 
 Networking::NetworkHost::NetworkHostConstIter
 Networking::NetworkHost::NetworkHostConstIter
 ::operator++(int) // Postfix increment
-{}
+{ return {m_iterator++}; }
 
 bool Networking::NetworkHost::NetworkHostConstIter
 ::operator==(const NetworkHostConstIter& that) const
-{}
+{ return *m_iterator == *(that.m_iterator); }
 
 bool Networking::NetworkHost::NetworkHostConstIter
 ::operator!=(const NetworkHostConstIter& that) const
-{}
+{ return *m_iterator != *(that.m_iterator); }
 
 ///////////////////////////////////////////////////////////////////////////////
