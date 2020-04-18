@@ -22,10 +22,11 @@
 
 #include <system_error>
 
-Networking::TCP::TCPListener
+template<class HostType>
+Networking::TCP::TCPListener<HostType>
 ::TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              std::function<void(unsigned int,const NetworkHost&)> userHandler,
+              std::function<void(unsigned int,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream)
   : m_listeningSocket{0}, m_userHandler{userHandler}, m_logStream{logStream}
 {
@@ -59,8 +60,8 @@ Networking::TCP::TCPListener
               + std::to_string(thePort));
 }
 
-int
-Networking::TCP::TCPListener
+template<class HostType>
+int Networking::TCP::TCPListener<HostType>
 ::getConfiguredSocket(bool reuseAddress, bool blocking) const
 {
   errno = 0;
@@ -88,8 +89,9 @@ Networking::TCP::TCPListener
   return theSocket;
 }
 
+template<class HostType>
 std::unique_ptr<Networking::Interfaces::IRequest>
-Networking::TCP::TCPListener::listen()
+Networking::TCP::TCPListener<HostType>::listen()
 {
   int receivingSocket = -1;
   struct sockaddr_in connectingEntity;
@@ -122,43 +124,51 @@ Networking::TCP::TCPListener::listen()
 // TCPListener::Builder
 ////
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setClientAddress(unsigned int theClientAddress)
 { clientAddress = theClientAddress; return *this; }
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setPort(unsigned short thePort)
 { port = thePort; return *this; }
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setBacklogSize(unsigned int theBacklogSize)
 { backlogSize = theBacklogSize; return *this; }
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setReuseAddress(bool isReuseAddress)
 { reuseAddress = isReuseAddress; return *this; }
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setBlocking(bool isBlocking)
 { blocking = isBlocking; return *this; }
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setUserHandler(UserHandler theUserHandler)
 { userHandler = theUserHandler; return *this; }
 
-Networking::TCP::TCPListener::Builder
-Networking::TCP::TCPListener::Builder
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setLogStream(std::function<void(const std::string&)> theLogStream)
 { logStream = theLogStream; return *this; }
 
-Networking::TCP::TCPListener
-Networking::TCP::TCPListener::Builder::build() const
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>
+Networking::TCP::TCPListener<HostType>::Builder::build() const
 {
   return TCPListener{clientAddress, port, backlogSize, reuseAddress, blocking,
       userHandler, logStream};

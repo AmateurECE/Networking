@@ -7,10 +7,10 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
-#include <Networking/NetAddress.h>
+#include <Networking/NetworkHost.h>
 #include <Networking/TCP/TLSClient.h>
 
 int main()
@@ -23,7 +23,7 @@ int main()
   using namespace Networking::TCP;
 
   // Connect to localhost:13001
-  Networking::NetAddress host{"127.0.0.1", 13001};
+  Networking::NetworkHost host{"127.0.0.1", 13001};
 
   // Create the client.
   TLSClient client = TLSClient::Builder()

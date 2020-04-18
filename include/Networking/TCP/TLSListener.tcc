@@ -27,12 +27,13 @@ std::string getSSLErrors()
   return std::string{buf};
 }
 
-Networking::TCP::TLSListener
+template<class HostType>
+Networking::TCP::TLSListener<HostType>
 ::TLSListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               bool useTwoWayAuthentication, HandshakeFailureAction action,
               std::string certificateFile, std::string privateKeyFile,
-              std::function<void(SSL*,const NetworkHost&)> userHandler,
+              std::function<void(SSL*,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream)
   : m_certificateFile{certificateFile}, m_privateKeyFile{privateKeyFile},
     m_sslContext{createContext(), [](SSL_CTX* context)
@@ -47,13 +48,15 @@ Networking::TCP::TLSListener
     m_userHandler{userHandler}, m_logStream{logStream}
 {}
 
+template<class HostType>
 std::unique_ptr<Networking::Interfaces::IRequest>
-Networking::TCP::TLSListener::listen()
+Networking::TCP::TLSListener<HostType>::listen()
 {
   return m_listener.listen();
 }
 
-SSL_CTX* Networking::TCP::TLSListener::createContext() const
+template<class HostType>
+SSL_CTX* Networking::TCP::TLSListener<HostType>::createContext() const
 {
   SSL_CTX* context = nullptr;
 
@@ -83,17 +86,18 @@ SSL_CTX* Networking::TCP::TLSListener::createContext() const
   return context;
 }
 
-Networking::TCP::TLSListener::TLSHandler
+template<class HostType>
+Networking::TCP::TLSListener<HostType>::TLSHandler
 ::TLSHandler(std::shared_ptr<SSL_CTX> sslContext,
-             std::function<void(SSL*,const NetworkHost&)> userHandler,
+             std::function<void(SSL*,const HostType&)> userHandler,
              HandshakeFailureAction handshakeFailureAction,
              std::function<void(const std::string&)> logStream)
   : m_ssl{nullptr}, m_sslContext{sslContext}, m_userHandler{userHandler},
     m_handshakeFailureAction{handshakeFailureAction}, m_logStream{logStream}
 {}
 
-void
-Networking::TCP::TLSListener::TLSHandler
+template<class HostType>
+void Networking::TCP::TLSListener<HostType>::TLSHandler
 ::operator()(unsigned int socket, const NetworkHost& clientAddress)
 {
   // Use the shared_ptr here because it allows for automatic destruction in
@@ -131,67 +135,79 @@ Networking::TCP::TLSListener::TLSHandler
 // TLSListener::Builder
 ////
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setClientAddress(unsigned int theClientAddress)
 { clientAddress = theClientAddress; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setPort(unsigned short thePort)
 { port = thePort; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setBacklogSize(unsigned int theBacklogSize)
 { backlogSize = theBacklogSize; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setReuseAddress(bool isReuseAddress)
 { reuseAddress = isReuseAddress; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setBlocking(bool isBlocking)
 { blocking = isBlocking; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setTwoWayAuthentication(bool theTwoWayAuthentication)
 { twoWayAuthentication = theTwoWayAuthentication; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setHandshakeFailureAction(HandshakeFailureAction theFailureAction)
 { failureAction = theFailureAction; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setCertificateFile(std::string theCertificateFile)
 { certificateFile = theCertificateFile; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setPrivateKeyFile(std::string thePrivateKeyFile)
 { privateKeyFile = thePrivateKeyFile; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setUserHandler(UserHandler theUserHandler)
 { userHandler = theUserHandler; return *this; }
 
-Networking::TCP::TLSListener::Builder
-Networking::TCP::TLSListener::Builder
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setLogStream(std::function<void(const std::string&)> theLogStream)
 { logStream = theLogStream; return *this; }
 
-Networking::TCP::TLSListener
-Networking::TCP::TLSListener::Builder::build() const
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>
+Networking::TCP::TLSListener<HostType>::Builder::build() const
 {
-  return TLSListener{clientAddress, port, backlogSize, reuseAddress, blocking,
-      twoWayAuthentication, failureAction, certificateFile, privateKeyFile,
-      userHandler, logStream};
+  return TLSListener<HostType>{clientAddress, port, backlogSize, reuseAddress,
+      blocking, twoWayAuthentication, failureAction, certificateFile,
+      privateKeyFile, userHandler, logStream};
 }
 
 ///////////////////////////////////////////////////////////////////////////////

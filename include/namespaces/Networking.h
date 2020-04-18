@@ -37,12 +37,18 @@ namespace Networking
 
   namespace TCP
   {
+    template<class HostType = NetworkHost>
     class TCPListener;
+    // template<class HostType = NetworkHost>
     class TCPRequest;
+    // template<class HostType = NetworkHost>
     class TCPClient;
 
+    template<class HostType = NetworkHost>
     class TLSListener;
+    // template<class HostType = NetworkHost>
     class TLSClient;
+    // template<class HostType = NetworkHost>
     class TLSException;
   };
 };

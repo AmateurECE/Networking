@@ -23,12 +23,13 @@
 #include <memory>
 #include <iostream>
 
+template<class HostType>
 class Networking::TCP::TCPListener : public Networking::Interfaces::IListener
 {
 public:
   TCPListener(unsigned int theClientAddresses, unsigned short thePort,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              std::function<void(unsigned int,const NetworkHost&)> userHandler,
+              std::function<void(unsigned int,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream);
 
   virtual std::unique_ptr<Interfaces::IRequest> listen() final override;
@@ -40,11 +41,12 @@ private:
 
   std::shared_ptr<int> m_listeningSocket;
   struct sockaddr_in m_listeningAddress;
-  std::function<void(unsigned int,const NetworkHost&)> m_userHandler;
+  std::function<void(unsigned int,const HostType&)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 };
 
-class Networking::TCP::TCPListener::Builder
+template<class HostType>
+class Networking::TCP::TCPListener<HostType>::Builder
 {
 public:
   Builder() = default;
@@ -53,7 +55,7 @@ public:
   Builder setBacklogSize(unsigned int);
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
-  using UserHandler = std::function<void(unsigned int,const NetworkHost&)>;
+  using UserHandler = std::function<void(unsigned int,const HostType&)>;
   Builder setUserHandler(UserHandler userHandler);
   Builder setLogStream(std::function<void(const std::string&)> logStream);
 
@@ -65,13 +67,15 @@ private:
   unsigned int backlogSize = 8;
   bool reuseAddress = true;
   bool blocking = true;
-  UserHandler userHandler = [](unsigned int,const NetworkHost&){ return; };
+  UserHandler userHandler = [](unsigned int,const HostType&){ return; };
   std::function<void(const std::string&)> logStream =
     [](const std::string& message)
   {
     std::cerr << message << '\n';
   };
 };
+
+#include <Networking/TCP/TCPListener.tcc>
 
 #endif // __ET_TCPLISTENER__
 

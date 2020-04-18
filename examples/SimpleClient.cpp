@@ -8,7 +8,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/10/2020
+// LAST EDITED:     04/17/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -24,7 +24,7 @@ int main()
 
   using namespace Networking;
   // Can also instantiate like this: NetAddress host{"127.0.0.1:13001"};
-  NetAddress host{"127.0.0.1", 13001};
+  NetworkHost host{"127.0.0.1", 13001};
   TCP::TCPClient client = TCP::TCPClient{host, handler};
   client.connect();
 }
