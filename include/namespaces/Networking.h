@@ -46,7 +46,7 @@ namespace Networking
 
     template<class HostType = NetworkHost>
     class TLSListener;
-    // template<class HostType = NetworkHost>
+    template<class HostType = NetworkHost>
     class TLSClient;
     // template<class HostType = NetworkHost>
     class TLSException;

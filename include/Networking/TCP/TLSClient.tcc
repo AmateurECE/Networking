@@ -29,8 +29,9 @@ static std::string getSSLErrors()
   return std::string{buf};
 }
 
-Networking::TCP::TLSClient
-::TLSClient(NetworkHost hostAddress, std::function<void(BIO*)> userHandler,
+template<class HostType>
+Networking::TCP::TLSClient<HostType>
+::TLSClient(HostType hostAddress, std::function<void(BIO*)> userHandler,
             bool useTwoWayAuthentication, std::string customCACertificatePath,
             std::function<void(const std::string&)> logStream)
   : m_sslContext{createContext(customCACertificatePath), [](SSL_CTX* ctx)
@@ -41,8 +42,8 @@ Networking::TCP::TLSClient
     m_logStream{logStream}
 {}
 
-SSL_CTX*
-Networking::TCP::TLSClient
+template<class HostType>
+SSL_CTX* Networking::TCP::TLSClient<HostType>
 ::createContext(std::string customCACertificatePath)
 {
   SSL_CTX* context = nullptr;
@@ -111,7 +112,9 @@ Networking::TCP::TLSClient
   return context;
 }
 
-void Networking::TCP::TLSClient::connect()
+// TODO: Write a specialization for UnixHost
+template<class HostType>
+void Networking::TCP::TLSClient<HostType>::connect()
 {
   // Similar to TLSListener, we wrap the BIO pointer in a shared_ptr, but then
   // we pass the raw pointer to the user. Why? Because the SSL library
@@ -208,36 +211,47 @@ void Networking::TCP::TLSClient::connect()
 // TLSClient::Builder
 ////
 
-Networking::TCP::TLSClient::Builder
-Networking::TCP::TLSClient::Builder
-::setHostAddress(NetworkHost hostAddress)
+template<>
+Networking::TCP::TLSClient<Networking::NetworkHost>::Builder::Builder()
+  : m_hostAddress{INADDR_LOOPBACK, 443}
+{}
+
+template<class HostType>
+typename Networking::TCP::TLSClient<HostType>::Builder
+Networking::TCP::TLSClient<HostType>::Builder
+::setHostAddress(HostType hostAddress)
 { m_hostAddress = hostAddress; return *this; }
 
-Networking::TCP::TLSClient::Builder
-Networking::TCP::TLSClient::Builder
+template<class HostType>
+typename Networking::TCP::TLSClient<HostType>::Builder
+Networking::TCP::TLSClient<HostType>::Builder
 ::setUserHandler(std::function<void(BIO*)> userHandler)
 { m_userHandler = userHandler; return *this; }
 
-Networking::TCP::TLSClient::Builder
-Networking::TCP::TLSClient::Builder
+template<class HostType>
+typename Networking::TCP::TLSClient<HostType>::Builder
+Networking::TCP::TLSClient<HostType>::Builder
 ::setTwoWayAuthentication(bool useTwoWayAuthentication)
 { m_useTwoWayAuthentication = useTwoWayAuthentication; return *this; }
 
-Networking::TCP::TLSClient::Builder
-Networking::TCP::TLSClient::Builder
+template<class HostType>
+typename Networking::TCP::TLSClient<HostType>::Builder
+Networking::TCP::TLSClient<HostType>::Builder
 ::setCustomCACertificatePath(std::string customCACertificatePath)
 { m_customCACertificatePath = customCACertificatePath; return *this; }
 
-Networking::TCP::TLSClient::Builder
-Networking::TCP::TLSClient::Builder
+template<class HostType>
+typename Networking::TCP::TLSClient<HostType>::Builder
+Networking::TCP::TLSClient<HostType>::Builder
 ::setLogStream(std::function<void(const std::string&)> logStream)
 { m_logStream = logStream; return *this; }
 
-Networking::TCP::TLSClient
-Networking::TCP::TLSClient::Builder::build() const
+template<class HostType>
+Networking::TCP::TLSClient<HostType>
+Networking::TCP::TLSClient<HostType>::Builder::build() const
 {
-  return TLSClient{m_hostAddress, m_userHandler, m_useTwoWayAuthentication,
-      m_customCACertificatePath, m_logStream};
+  return TLSClient<HostType>{m_hostAddress, m_userHandler,
+      m_useTwoWayAuthentication, m_customCACertificatePath, m_logStream};
 }
 
 ///////////////////////////////////////////////////////////////////////////////

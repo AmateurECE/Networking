@@ -26,7 +26,7 @@ int main()
   Networking::NetworkHost host{"127.0.0.1", 13001};
 
   // Create the client.
-  TLSClient client = TLSClient::Builder()
+  TLSClient<> client = TLSClient<>::Builder()
     .setHostAddress(host)
     .setUserHandler(handler)
     .setCustomCACertificatePath("../cert.pem")

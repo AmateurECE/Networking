@@ -15,7 +15,6 @@ set(NETWORKING_SOURCES
     source/Networking/DelegatorSTSP.cpp
     source/Networking/NetworkHost.cpp
     source/Networking/TCP/TLSException.cpp
-    source/Networking/TCP/TLSClient.cpp
 )
 
 ###############################################################################

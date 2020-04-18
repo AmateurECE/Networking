@@ -20,10 +20,11 @@
 
 #include <openssl/ssl.h>
 
+template<class HostType>
 class Networking::TCP::TLSClient
 {
 public:
-  TLSClient(NetworkHost hostAddress,
+  TLSClient(HostType hostAddress,
             std::function<void(BIO*)> userHandler,
             bool useTwoWayAuthentication,
             std::string customCACertificatePath,
@@ -38,26 +39,28 @@ private:
 
   std::unique_ptr<SSL_CTX, std::function<void(SSL_CTX*)>> m_sslContext;
 
-  NetworkHost m_hostAddress;
+  HostType m_hostAddress;
   std::function<void(BIO*)> m_userHandler;
   const bool m_useTwoWayAuthentication;
   std::function<void(const std::string&)> m_logStream;
 };
 
-class Networking::TCP::TLSClient::Builder
+template<class HostType>
+class Networking::TCP::TLSClient<HostType>::Builder
 {
 public:
-  Builder() = default;
-  Builder setHostAddress(NetworkHost);
+  Builder();
+  Builder setHostAddress(HostType);
   Builder setUserHandler(std::function<void(BIO*)>);
   Builder setTwoWayAuthentication(bool);
   Builder setCustomCACertificatePath(std::string);
   Builder setLogStream(std::function<void(const std::string&)>);
 
-  TLSClient build() const;
+  TLSClient<HostType> build() const;
 
 private:
-  NetworkHost m_hostAddress = NetworkHost{INADDR_LOOPBACK, 443};
+
+  HostType m_hostAddress;
   std::function<void(BIO*)> m_userHandler = [](BIO*){ return; };
   bool m_useTwoWayAuthentication = false;
 
@@ -71,6 +74,8 @@ private:
     std::cerr << message << '\n';
   };
 };
+
+#include <Networking/TCP/TLSClient.tcc>
 
 #endif // __ET_TLSCLIENT__
 
