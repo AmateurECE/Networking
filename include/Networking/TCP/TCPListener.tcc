@@ -108,10 +108,9 @@ Networking::TCP::TCPListener<HostType>::listen()
 
   try
     {
-      return std::make_unique<TCP::TCPRequest>(receivingSocket,
-                                               NetworkHost{connectingEntity},
-                                               m_userHandler,
-                                               m_logStream);
+      return std::make_unique<TCP::TCPRequest<HostType>>
+        (receivingSocket, HostType{connectingEntity}, m_userHandler,
+         m_logStream);
     }
   catch (const std::bad_alloc& e)
     {

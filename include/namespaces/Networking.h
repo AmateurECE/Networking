@@ -39,7 +39,7 @@ namespace Networking
   {
     template<class HostType = NetworkHost>
     class TCPListener;
-    // template<class HostType = NetworkHost>
+    template<class HostType = NetworkHost>
     class TCPRequest;
     // template<class HostType = NetworkHost>
     class TCPClient;

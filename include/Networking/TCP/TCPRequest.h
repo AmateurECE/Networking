@@ -20,20 +20,23 @@
 #include <memory>
 #include <ostream>
 
+template<class HostType>
 class Networking::TCP::TCPRequest : public Networking::Interfaces::IRequest
 {
 public:
-  TCPRequest(int socket, NetworkHost connectingAddress,
-             std::function<void(unsigned int,const NetworkHost&)>& userHandler,
+  TCPRequest(int socket, HostType connectingAddress,
+             std::function<void(unsigned int,const HostType&)>& userHandler,
              std::function<void(const std::string&)> logStream);
   virtual void handle() final override;
 
 private:
   std::shared_ptr<int> m_socket;
-  NetworkHost m_connectingAddress;
-  std::function<void(unsigned int,const NetworkHost&)>& m_userHandler;
+  HostType m_connectingAddress;
+  std::function<void(unsigned int,const HostType&)>& m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 };
+
+#include <Networking/TCP/TCPRequest.tcc>
 
 #endif // __ET_TCPREQUEST__
 

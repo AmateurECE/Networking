@@ -14,9 +14,10 @@
 
 #include <unistd.h>
 
-Networking::TCP::TCPRequest
-::TCPRequest(int socket, NetworkHost connectingAddress,
-             std::function<void(unsigned int,const NetworkHost&)>& userHandler,
+template<class HostType>
+Networking::TCP::TCPRequest<HostType>
+::TCPRequest(int socket, HostType connectingAddress,
+             std::function<void(unsigned int,const HostType&)>& userHandler,
              std::function<void(const std::string&)> logStream)
   : m_socket{0}, m_connectingAddress{connectingAddress},
     m_userHandler{userHandler}, m_logStream{logStream}
@@ -28,8 +29,10 @@ Networking::TCP::TCPRequest
   *m_socket = socket;
 }
 
-void Networking::TCP::TCPRequest::handle()
+template<>
+void Networking::TCP::TCPRequest<Networking::NetworkHost>::handle()
 {
+  // TODO: Add specialization for UnixHost
   m_logStream("Handling connection from ("
               + m_connectingAddress.getIPDotNotation() + ", "
               + std::to_string(m_connectingAddress.getPortHostOrder()) + ")");
