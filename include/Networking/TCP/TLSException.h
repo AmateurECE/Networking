@@ -27,18 +27,21 @@
 #include <exception>
 #include <string>
 
+template<class HostType>
 class Networking::TCP::TLSException
   : public std::exception
 {
 public:
-  TLSException(std::string what, NetworkHost client);
+  TLSException(std::string what, HostType client);
   virtual const char* what() const noexcept override;
-  const NetworkHost& getClientAddress() const;
+  const HostType& getClient() const;
 
 private:
   std::string m_what;
-  NetworkHost m_client;
+  HostType m_client;
 };
+
+#include <Networking/TCP/TLSException.tcc>
 
 #endif // __ET_TLSEXCEPTION__
 

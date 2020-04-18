@@ -12,21 +12,22 @@
 
 #include <Networking/TCP/TLSException.h>
 
-Networking::TCP::TLSException
-::TLSException(std::string what, NetworkHost client)
+template<class HostType>
+Networking::TCP::TLSException<HostType>
+::TLSException(std::string what, HostType client)
   : m_what{what}, m_client{client}
 {}
 
-const char*
-Networking::TCP::TLSException
+template<class HostType>
+const char* Networking::TCP::TLSException<HostType>
 ::what() const noexcept
 {
   return m_what.c_str();
 }
 
-const Networking::NetworkHost&
-Networking::TCP::TLSException
-::getClientAddress() const
+template<class HostType>
+const HostType& Networking::TCP::TLSException<HostType>
+::getClient() const
 {
   return m_client;
 }
