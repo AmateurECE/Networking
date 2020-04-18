@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <Networking/TCP/TCPRequest.h>
@@ -29,13 +29,9 @@ Networking::TCP::TCPRequest<HostType>
   *m_socket = socket;
 }
 
-template<>
-void Networking::TCP::TCPRequest<Networking::NetworkHost>::handle()
+template<class HostType>
+void Networking::TCP::TCPRequest<HostType>::handle()
 {
-  // TODO: Add specialization for UnixHost
-  m_logStream("Handling connection from ("
-              + m_connectingAddress.getIPDotNotation() + ", "
-              + std::to_string(m_connectingAddress.getPortHostOrder()) + ")");
   m_userHandler(*m_socket, m_connectingAddress);
 }
 

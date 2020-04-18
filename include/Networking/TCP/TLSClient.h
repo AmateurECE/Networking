@@ -7,7 +7,7 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #ifndef __ET_TLSCLIENT__
@@ -36,6 +36,7 @@ public:
 
 private:
   SSL_CTX* createContext(std::string);
+  std::string getHostString() const;
 
   std::unique_ptr<SSL_CTX, std::function<void(SSL_CTX*)>> m_sslContext;
 

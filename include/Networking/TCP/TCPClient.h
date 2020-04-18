@@ -7,7 +7,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #ifndef __ET_TCPCLIENT__
@@ -35,6 +35,8 @@ public:
   void connect();
 
 private:
+  const struct sockaddr_in& getHostAddress() const;
+
   std::shared_ptr<int> m_socket;
   HostType m_hostAddress;
   std::function<void(int)> m_userHandler;

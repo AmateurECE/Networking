@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -54,7 +54,7 @@ private:
   std::unique_ptr<struct TLSHandler> m_tlsHandler;
   TCPListener<HostType> m_listener;
   const bool m_useTwoWayAuthentication;
-  std::function<void(SSL*,const NetworkHost&)> m_userHandler;
+  std::function<void(SSL*,const HostType&)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
 };
 
@@ -65,7 +65,7 @@ struct Networking::TCP::TLSListener<HostType>::TLSHandler
              std::function<void(SSL*,const HostType&)> userHandler,
              HandshakeFailureAction handshakeFailureAction,
              std::function<void(const std::string&)> logStream);
-  void operator()(unsigned int, const NetworkHost&);
+  void operator()(unsigned int, const HostType&);
 
 private:
   std::shared_ptr<SSL> m_ssl;

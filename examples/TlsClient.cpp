@@ -7,7 +7,7 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <Networking/NetworkHost.h>
@@ -23,10 +23,10 @@ int main()
   using namespace Networking::TCP;
 
   // Connect to localhost:13001
-  Networking::NetworkHost host{"127.0.0.1", 13001};
+  Networking::NetworkAddress host{"127.0.0.1", 13001};
 
   // Create the client.
-  TLSClient<> client = TLSClient<>::Builder()
+  auto client = TLSClient<Networking::NetworkAddress>::Builder()
     .setHostAddress(host)
     .setUserHandler(handler)
     .setCustomCACertificatePath("../cert.pem")

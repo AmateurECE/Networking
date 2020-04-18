@@ -7,7 +7,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -38,11 +38,11 @@ Networking::TCP::TCPClient<HostType>
   *m_socket = socket;
 }
 
-template<>
-void Networking::TCP::TCPClient<Networking::NetworkHost>::connect()
+template<class HostType>
+void Networking::TCP::TCPClient<HostType>::connect()
 {
   errno = 0;
-  const struct sockaddr_in& hostAddress = m_hostAddress.getSockAddr();
+  const struct sockaddr_in& hostAddress = getHostAddress();
 
   if (-1 == ::connect(*m_socket,
                       reinterpret_cast<const struct sockaddr*>(&hostAddress),
@@ -51,10 +51,16 @@ void Networking::TCP::TCPClient<Networking::NetworkHost>::connect()
       throw std::system_error{errno, std::generic_category()};
     }
 
-  m_logStream("Successfully connected to ("
-              + m_hostAddress.getIPDotNotation() + ", "
-              + std::to_string(m_hostAddress.getPortHostOrder()) + ")");
   m_userHandler(*m_socket);
+}
+
+// TODO: Write a specialization for NetworkHost
+template<>
+const struct sockaddr_in&
+Networking::TCP::TCPClient<Networking::NetworkAddress>
+::getHostAddress() const
+{
+  return m_hostAddress.getSockAddr();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

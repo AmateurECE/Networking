@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <namespaces/Networking.h>
@@ -23,12 +23,12 @@ int main()
   using namespace Networking::Interfaces;
   using namespace Networking::TCP;
 
-  TLSListener<>::Builder builder = TLSListener<>::Builder()
+  auto builder = TLSListener<NetworkAddress>::Builder()
     .setPort(13001)
     .setCertificateFile("../cert.pem")
     .setPrivateKeyFile("../April04TestKey.pem");
   std::unique_ptr<IListener> listener
-    = std::make_unique<TLSListener<>>(builder.build());
+    = std::make_unique<TLSListener<NetworkAddress>>(builder.build());
   std::unique_ptr<IDelegator> delegator = std::make_unique<DelegatorSTSP>();
   BlockingServer server = BlockingServer(std::move(delegator),
                                          std::move(listener));

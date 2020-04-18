@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
@@ -98,7 +98,7 @@ Networking::TCP::TLSListener<HostType>::TLSHandler
 
 template<class HostType>
 void Networking::TCP::TLSListener<HostType>::TLSHandler
-::operator()(unsigned int socket, const NetworkHost& clientAddress)
+::operator()(unsigned int socket, const HostType& clientAddress)
 {
   // Use the shared_ptr here because it allows for automatic destruction in
   // case the flow of normal logic is interrupted (e.g. by exception).
@@ -114,7 +114,7 @@ void Networking::TCP::TLSListener<HostType>::TLSHandler
   if (0 >= SSL_accept(sslRaw))
     {
       const std::string sslErrors = "Client "
-        + clientAddress.getIPDotNotation()
+        + clientAddress.string()
         + " failed TLS handshake; error trace:\n" + getSSLErrors()
         + "Severing connection.";
       if (m_handshakeFailureAction == HandshakeFailureAction::NOTHING)

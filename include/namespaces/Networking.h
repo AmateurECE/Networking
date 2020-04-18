@@ -34,6 +34,8 @@ namespace Networking
 
   // utility class encapsulating useful logic for dealing with inet addresses.
   class NetworkHost;
+  class NetworkAddress;
+  class UnixHost;
 
   namespace TCP
   {

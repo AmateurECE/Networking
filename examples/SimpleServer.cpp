@@ -12,7 +12,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <Networking/BlockingServer.h>
@@ -26,7 +26,7 @@
 int main()
 {
   // The user handler. Called whenever a connection is received.
-  auto closure = [](int socket, const Networking::NetworkHost& requestor)
+  auto closure = [](int socket, const Networking::NetworkAddress& requestor)
     {
       std::cerr << "Received connection from ("
       << requestor.getIPDotNotation() << ", "
@@ -36,11 +36,12 @@ int main()
   using namespace Networking;
   using namespace Networking::Interfaces;
   using namespace Networking::TCP;
-  TCPListener<>::Builder builder = TCPListener<>::Builder()
+  TCPListener<NetworkAddress>::Builder builder
+    = TCPListener<NetworkAddress>::Builder()
     .setPort(13001)
     .setUserHandler(closure);
   std::unique_ptr<IListener> listener
-    = std::make_unique<TCPListener<>>(builder.build());
+    = std::make_unique<TCPListener<NetworkAddress>>(builder.build());
   std::unique_ptr<IDelegator> delegator = std::make_unique<DelegatorSTSP>();
   BlockingServer server = BlockingServer{std::move(delegator),
                                          std::move(listener)};

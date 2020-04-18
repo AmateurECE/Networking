@@ -7,7 +7,7 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #include <Networking/TCP/TLSClient.h>
@@ -137,8 +137,7 @@ void Networking::TCP::TLSClient<HostType>::connect()
   BIO* stream = sslBIO.get();
 
   long result = 1;
-  std::string hostString = m_hostAddress.getIPDotNotation() + ":"
-    + std::to_string(m_hostAddress.getPortHostOrder());
+  std::string hostString = getHostString();
   result = BIO_set_conn_hostname(stream, hostString.c_str());
   if (1 != result)
     {
@@ -203,8 +202,25 @@ void Networking::TCP::TLSClient<HostType>::connect()
     }
 
   // We have successfully connect to the client.
-  m_logStream("Successfully connected to " + m_hostAddress.getIPDotNotation());
+  m_logStream("Successfully connected to " + m_hostAddress.string());
   m_userHandler(stream);
+}
+
+// TODO: Provide specialization for NetworkHost
+// template<>
+// std::string Networking::TCP::TLSClient<Networking::NetworkHost>
+// ::getHostString() const
+// {
+//   return m_hostAddress.getHostname() + ":"
+//     + std::to_string(m_hostAddress.getPortHostOrder());
+// }
+
+template<>
+std::string Networking::TCP::TLSClient<Networking::NetworkAddress>
+::getHostString() const
+{
+  return m_hostAddress.getIPDotNotation() + ":"
+    + std::to_string(m_hostAddress.getPortHostOrder());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,7 +228,7 @@ void Networking::TCP::TLSClient<HostType>::connect()
 ////
 
 template<>
-Networking::TCP::TLSClient<Networking::NetworkHost>::Builder::Builder()
+Networking::TCP::TLSClient<Networking::NetworkAddress>::Builder::Builder()
   : m_hostAddress{INADDR_LOOPBACK, 443}
 {}
 

@@ -8,43 +8,69 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/17/2020
+// LAST EDITED:     04/18/2020
 ////
 
 #ifndef __ET_NETADDRESS__
 #define __ET_NETADDRESS__
 
 #include <namespaces/Networking.h>
+#include <Networking/NetworkAddress.h>
 
-#include <netinet/in.h>
-
+#include <iterator>
+#include <list>
 #include <string>
 
 class Networking::NetworkHost
 {
 public:
-  NetworkHost(struct sockaddr_in);
+  // TODO: Add ability to instantiate with service name (e.g. "http")
+  NetworkHost(NetworkAddress address);
 
   // Must be in the form "<IPv4 | IPv6 | Hostname>:<port>"
   // If a hostname is given, the ctor will attempt to resolve it using DNS.
-  NetworkHost(const std::string& hostString);
+  NetworkHost(std::string hostString);
 
   // ipOrHostname may be in the form IPv4 or IPv6 or Hostname
   // If a hostname is given, the ctor will attempt to resolve it using DNS.
-  NetworkHost(const std::string& ipOrHostname, unsigned short portHostOrder);
+  NetworkHost(std::string ipOrHostname, unsigned short portHostOrder);
 
-  NetworkHost(unsigned int ipHostOrder, unsigned short portHostOrder);
-
-  unsigned int getIPHostOrder() const;
-  std::string getIPDotNotation() const;
+  std::string getHostname() const;
   unsigned short getPortHostOrder() const;
-  const struct sockaddr_in& getSockAddr() const;
+  std::string string() const;
+
+  class NetworkHostConstIter;
+  typedef NetworkHostConstIter const_iterator;
+  const_iterator cbegin() const;
+  const_iterator cend() const;
 
 private:
-  struct sockaddr_in m_address;
 
-  struct sockaddr_in getSockAddr(const std::string& ipOrHostname,
-                                 unsigned short portHostOrder) const;
+  NetworkAddress getNetworkAddress(std::string ipAddress,
+                                   unsigned short portHostOrder) const;
+  void getAddresses(std::string hostname, unsigned short portHostOrder);
+
+  std::list<NetworkAddress> m_addresses;
+  std::string m_hostname;
+};
+
+class Networking::NetworkHost::NetworkHostConstIter
+  : public virtual std::iterator<std::input_iterator_tag, NetworkAddress>
+{
+public:
+  NetworkHostConstIter() = delete;
+  ~NetworkHostConstIter() = default;
+  NetworkHostConstIter(std::list<NetworkAddress>::const_iterator);
+  NetworkHostConstIter(const NetworkHostConstIter&) = default;
+  NetworkHostConstIter& operator=(const NetworkHostConstIter& that) = default;
+  NetworkHostConstIter& operator++(); // Postfix increment
+  NetworkHostConstIter operator++(int); // Prefix increment
+  bool operator==(const NetworkHostConstIter& that) const;
+  bool operator!=(const NetworkHostConstIter& that) const;
+  NetworkAddress operator*() const;
+
+private:
+  std::list<NetworkAddress>::const_iterator m_iterator;
 };
 
 #endif // __ET_NETADDRESS__
