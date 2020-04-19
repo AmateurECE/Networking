@@ -40,8 +40,9 @@ Networking::TCP::TCPListener<HostType>
   *m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
 
   errno = 0;
-  if (-1 == ::bind(*m_listeningSocket, getSockAddr(),
-                   sizeof(struct sockaddr_in)))
+  size_t sockLen = 0;
+  const struct sockaddr* address = getSockAddr(sockLen);
+  if (-1 == ::bind(*m_listeningSocket, address, sockLen))
     {
       throw std::system_error{errno, std::generic_category()};
     }
@@ -54,16 +55,18 @@ Networking::TCP::TCPListener<HostType>
 
 template<>
 const struct sockaddr* Networking::TCP::TCPListener<Networking::NetworkHost>
-::getSockAddr() const
+::getSockAddr(size_t& socketLength) const
 {
+  socketLength = sizeof(struct sockaddr_in);
   return reinterpret_cast<const struct sockaddr*>
     (&((*(m_listeningAddress.cbegin())).getSockAddr()));
 }
 
 template<>
 const struct sockaddr* Networking::TCP::TCPListener<Networking::NetworkAddress>
-::getSockAddr() const
+::getSockAddr(size_t& socketLength) const
 {
+  socketLength = sizeof(struct sockaddr_in);
   return reinterpret_cast<const struct sockaddr*>
     (&m_listeningAddress.getSockAddr());
 }

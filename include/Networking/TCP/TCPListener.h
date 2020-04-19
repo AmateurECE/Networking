@@ -38,7 +38,7 @@ public:
 
 private:
   int getConfiguredSocket(bool reuseAddress, bool blocking) const;
-  const struct sockaddr* getSockAddr() const;
+  const struct sockaddr* getSockAddr(size_t&) const;
 
   HostType m_listeningAddress;
   std::function<void(unsigned int,const HostType&)> m_userHandler;
