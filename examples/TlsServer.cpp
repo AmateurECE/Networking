@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     04/19/2020
 ////
 
 #include <namespaces/Networking.h>
@@ -23,10 +23,16 @@ int main()
   using namespace Networking::Interfaces;
   using namespace Networking::TCP;
 
+  auto closure = [](SSL*, NetworkAddress client)
+    {
+      std::cerr << "Received TLS connection from " << client.string() << "\n";
+    };
+
   auto builder = TLSListener<NetworkAddress>::Builder()
-    .setPort(13001)
+    .setListeningAddress(NetworkAddress{"127.0.0.1", 13001})
     .setCertificateFile("../cert.pem")
-    .setPrivateKeyFile("../April04TestKey.pem");
+    .setPrivateKeyFile("../April04TestKey.pem")
+    .setUserHandler(closure);
   std::unique_ptr<IListener> listener
     = std::make_unique<TLSListener<NetworkAddress>>(builder.build());
   std::unique_ptr<IDelegator> delegator = std::make_unique<DelegatorSTSP>();

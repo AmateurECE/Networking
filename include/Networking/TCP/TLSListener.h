@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     04/19/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -32,9 +32,9 @@ public:
       THROW
     };
 
-  TLSListener(unsigned int theClientAddresses, unsigned short thePort,
-              unsigned int theBacklogSize, bool reuseAddress, bool blocking,
-              bool useTwoWayAuthentication, HandshakeFailureAction action,
+  TLSListener(HostType acceptedClients, unsigned int theBacklogSize,
+              bool reuseAddress, bool blocking, bool useTwoWayAuthentication,
+              HandshakeFailureAction action,
               std::string certficateFile, std::string privateKeyFile,
               std::function<void(SSL*,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream);
@@ -79,9 +79,8 @@ template<class HostType>
 class Networking::TCP::TLSListener<HostType>::Builder
 {
 public:
-  Builder() = default;
-  Builder setClientAddress(unsigned int);
-  Builder setPort(unsigned short);
+  Builder();
+  Builder setListeningAddress(HostType);
   Builder setBacklogSize(unsigned int);
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
@@ -96,8 +95,7 @@ public:
   TLSListener build() const;
 
 private:
-  unsigned int clientAddress = INADDR_ANY;
-  unsigned short port = 0;
+  HostType listeningAddress;
   unsigned int backlogSize = 8;
   bool reuseAddress = true;
   bool blocking = true;

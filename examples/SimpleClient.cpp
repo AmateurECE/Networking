@@ -8,7 +8,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     04/19/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -19,7 +19,7 @@ int main()
 {
   auto handler = [](int socket)
     {
-      std::cerr << "Socket connected.";
+      std::cerr << "Socket connected." << "\n";
     };
 
   using namespace Networking;

@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     04/19/2020
 ////
 
 #ifndef __ET_TCPLISTENER__
@@ -17,18 +17,18 @@
 
 #include <Networking/Interfaces/IListener.h>
 
-#include <netinet/in.h>
-
 #include <functional>
 #include <memory>
 #include <iostream>
+
+struct sockaddr;
 
 template<class HostType>
 class Networking::TCP::TCPListener : public Networking::Interfaces::IListener
 {
 public:
-  TCPListener(unsigned int theClientAddresses, unsigned short thePort,
-              unsigned int theBacklogSize, bool reuseAddress, bool blocking,
+  TCPListener(HostType acceptedClients, unsigned int theBacklogSize,
+              bool reuseAddress, bool blocking,
               std::function<void(unsigned int,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream);
 
@@ -38,20 +38,20 @@ public:
 
 private:
   int getConfiguredSocket(bool reuseAddress, bool blocking) const;
+  const struct sockaddr* getSockAddr() const;
 
-  std::shared_ptr<int> m_listeningSocket;
-  struct sockaddr_in m_listeningAddress;
+  HostType m_listeningAddress;
   std::function<void(unsigned int,const HostType&)> m_userHandler;
   std::function<void(const std::string&)> m_logStream;
+  std::shared_ptr<int> m_listeningSocket;
 };
 
 template<class HostType>
 class Networking::TCP::TCPListener<HostType>::Builder
 {
 public:
-  Builder() = default;
-  Builder setClientAddress(unsigned int);
-  Builder setPort(unsigned short);
+  Builder();
+  Builder setListeningAddress(HostType);
   Builder setBacklogSize(unsigned int);
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
@@ -62,8 +62,7 @@ public:
   TCPListener build() const;
 
 private:
-  unsigned int clientAddress = INADDR_ANY;
-  unsigned short port = 0;
+  HostType listeningAddress;
   unsigned int backlogSize = 8;
   bool reuseAddress = true;
   bool blocking = true;

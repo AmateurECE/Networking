@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     04/19/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
@@ -29,7 +29,7 @@ std::string getSSLErrors()
 
 template<class HostType>
 Networking::TCP::TLSListener<HostType>
-::TLSListener(unsigned int theClientAddresses, unsigned short thePort,
+::TLSListener(HostType acceptedClients,
               unsigned int theBacklogSize, bool reuseAddress, bool blocking,
               bool useTwoWayAuthentication, HandshakeFailureAction action,
               std::string certificateFile, std::string privateKeyFile,
@@ -42,8 +42,8 @@ Networking::TCP::TLSListener<HostType>
         }},
     m_tlsHandler{std::make_unique<struct TLSHandler>
         (m_sslContext, userHandler, action, logStream)},
-    m_listener{theClientAddresses, thePort, theBacklogSize, reuseAddress,
-        blocking, std::ref(*m_tlsHandler), logStream},
+    m_listener{acceptedClients, theBacklogSize, reuseAddress, blocking,
+        std::ref(*m_tlsHandler), logStream},
     m_useTwoWayAuthentication{useTwoWayAuthentication},
     m_userHandler{userHandler}, m_logStream{logStream}
 {}
@@ -135,17 +135,23 @@ void Networking::TCP::TLSListener<HostType>::TLSHandler
 // TLSListener::Builder
 ////
 
-template<class HostType>
-typename Networking::TCP::TLSListener<HostType>::Builder
-Networking::TCP::TLSListener<HostType>::Builder
-::setClientAddress(unsigned int theClientAddress)
-{ clientAddress = theClientAddress; return *this; }
+template<>
+Networking::TCP::TLSListener<Networking::NetworkHost>::Builder
+::Builder()
+  : listeningAddress{"127.0.0.1", 443}
+{}
+
+template<>
+Networking::TCP::TLSListener<Networking::NetworkAddress>::Builder
+::Builder()
+  : listeningAddress{INADDR_LOOPBACK, 443}
+{}
 
 template<class HostType>
 typename Networking::TCP::TLSListener<HostType>::Builder
 Networking::TCP::TLSListener<HostType>::Builder
-::setPort(unsigned short thePort)
-{ port = thePort; return *this; }
+::setListeningAddress(HostType theListeningAddress)
+{ listeningAddress = theListeningAddress; return *this; }
 
 template<class HostType>
 typename Networking::TCP::TLSListener<HostType>::Builder
@@ -205,7 +211,7 @@ template<class HostType>
 typename Networking::TCP::TLSListener<HostType>
 Networking::TCP::TLSListener<HostType>::Builder::build() const
 {
-  return TLSListener<HostType>{clientAddress, port, backlogSize, reuseAddress,
+  return TLSListener<HostType>{listeningAddress, backlogSize, reuseAddress,
       blocking, twoWayAuthentication, failureAction, certificateFile,
       privateKeyFile, userHandler, logStream};
 }

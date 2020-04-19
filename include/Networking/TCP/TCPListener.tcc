@@ -7,13 +7,14 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     04/19/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
 #include <Networking/TCP/TCPRequest.h>
 
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -24,15 +25,13 @@
 
 template<class HostType>
 Networking::TCP::TCPListener<HostType>
-::TCPListener(unsigned int theClientAddresses, unsigned short thePort,
-              unsigned int theBacklogSize, bool reuseAddress, bool blocking,
+::TCPListener(HostType acceptedClients, unsigned int theBacklogSize,
+              bool reuseAddress, bool blocking,
               std::function<void(unsigned int,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream)
-  : m_listeningSocket{0}, m_userHandler{userHandler}, m_logStream{logStream}
+  : m_listeningAddress{acceptedClients}, m_userHandler{userHandler},
+    m_logStream{logStream}
 {
-  memset(&m_listeningAddress, 0, sizeof(m_listeningAddress));
-
-  // Create a shared_ptr
   m_listeningSocket
     = std::shared_ptr<int>(new int, [](int *pInt) {
         ::close(*pInt);
@@ -40,13 +39,9 @@ Networking::TCP::TCPListener<HostType>
       });
   *m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
 
-  m_listeningAddress.sin_family = AF_INET;
-  m_listeningAddress.sin_port = htons(thePort);
-  m_listeningAddress.sin_addr.s_addr = htonl(theClientAddresses);
   errno = 0;
-  if (-1 == ::bind(*m_listeningSocket,
-                   reinterpret_cast<struct sockaddr*>(&m_listeningAddress),
-                   sizeof(m_listeningAddress)))
+  if (-1 == ::bind(*m_listeningSocket, getSockAddr(),
+                   sizeof(struct sockaddr_in)))
     {
       throw std::system_error{errno, std::generic_category()};
     }
@@ -55,9 +50,22 @@ Networking::TCP::TCPListener<HostType>
     {
       throw std::system_error{errno, std::generic_category()};
     }
+}
 
-  m_logStream("TCPListener is bound and listening on port "
-              + std::to_string(thePort));
+template<>
+const struct sockaddr* Networking::TCP::TCPListener<Networking::NetworkHost>
+::getSockAddr() const
+{
+  return reinterpret_cast<const struct sockaddr*>
+    (&((*(m_listeningAddress.cbegin())).getSockAddr()));
+}
+
+template<>
+const struct sockaddr* Networking::TCP::TCPListener<Networking::NetworkAddress>
+::getSockAddr() const
+{
+  return reinterpret_cast<const struct sockaddr*>
+    (&m_listeningAddress.getSockAddr());
 }
 
 template<class HostType>
@@ -124,16 +132,16 @@ Networking::TCP::TCPListener<HostType>::listen()
 ////
 
 template<class HostType>
-typename Networking::TCP::TCPListener<HostType>::Builder
 Networking::TCP::TCPListener<HostType>::Builder
-::setClientAddress(unsigned int theClientAddress)
-{ clientAddress = theClientAddress; return *this; }
+::Builder()
+  : listeningAddress{"127.0.0.1", 80}
+{}
 
 template<class HostType>
 typename Networking::TCP::TCPListener<HostType>::Builder
 Networking::TCP::TCPListener<HostType>::Builder
-::setPort(unsigned short thePort)
-{ port = thePort; return *this; }
+::setListeningAddress(HostType theListeningAddress)
+{ listeningAddress = theListeningAddress; return *this; }
 
 template<class HostType>
 typename Networking::TCP::TCPListener<HostType>::Builder
@@ -169,7 +177,7 @@ template<class HostType>
 typename Networking::TCP::TCPListener<HostType>
 Networking::TCP::TCPListener<HostType>::Builder::build() const
 {
-  return TCPListener{clientAddress, port, backlogSize, reuseAddress, blocking,
+  return TCPListener{listeningAddress, backlogSize, reuseAddress, blocking,
       userHandler, logStream};
 }
 
