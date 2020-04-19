@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            TCPClient.cpp
+// NAME:            TCPClient.tcc
 //
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //

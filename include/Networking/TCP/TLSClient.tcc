@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            TLSClient.cpp
+// NAME:            TLSClient.tcc
 //
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //

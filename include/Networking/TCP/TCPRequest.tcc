@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            TCPRequest.cpp
+// NAME:            TCPRequest.tcc
 //
 // AUTHOR:          Ethan D. Twardy <edtwardy@mtu.edu>
 //
