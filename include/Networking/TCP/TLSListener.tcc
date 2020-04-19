@@ -113,17 +113,16 @@ void Networking::TCP::TLSListener<HostType>::TLSHandler
   SSL_set_fd(sslRaw, socket);
   if (0 >= SSL_accept(sslRaw))
     {
-      const std::string sslErrors = "Client "
-        + clientAddress.string()
-        + " failed TLS handshake; error trace:\n" + getSSLErrors()
-        + "Severing connection.";
       if (m_handshakeFailureAction == HandshakeFailureAction::NOTHING)
         {
           return;
-          m_logStream(sslErrors);
         }
       else
         {
+          const std::string sslErrors = "Client "
+            + clientAddress.string()
+            + " failed TLS handshake; error trace:\n" + getSSLErrors()
+            + "Severing connection.";
           throw TLSException(sslErrors, clientAddress);
         }
     }
