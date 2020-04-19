@@ -112,7 +112,6 @@ SSL_CTX* Networking::TCP::TLSClient<HostType>
   return context;
 }
 
-// TODO: Write a specialization for UnixHost
 template<class HostType>
 void Networking::TCP::TLSClient<HostType>::connect()
 {

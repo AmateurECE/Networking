@@ -23,7 +23,6 @@
 #include <memory>
 #include <iostream>
 
-// TODO: Make TCPListener take a HostType
 template<class HostType>
 class Networking::TCP::TCPListener : public Networking::Interfaces::IListener
 {

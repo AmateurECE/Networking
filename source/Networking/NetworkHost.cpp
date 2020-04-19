@@ -150,8 +150,6 @@ std::string Networking::NetworkHost::nameLookup() const
     }
 }
 
-// TODO: Consider also supporting getaddrinfo_a?
-// TODO: Consider adding IDN support?
 void Networking::NetworkHost
 ::getAddresses(std::string hostname, unsigned short portHostOrder)
 {
@@ -183,7 +181,6 @@ void Networking::NetworkHost
 // NetworkHostConstIter
 ////
 
-// TODO: Look for using decls in template headers.
 using ListIterator = std::list<Networking::NetworkAddress>::const_iterator;
 Networking::NetworkHost::NetworkHostConstIter
 ::NetworkHostConstIter(ListIterator iterator)

@@ -24,7 +24,6 @@
 class Networking::NetworkHost
 {
 public:
-  // TODO: Add ability to instantiate with service name (e.g. "http")
   NetworkHost(NetworkAddress address);
 
   // Must be in the form "<IPv4 | IPv6 | Hostname>:<port>"

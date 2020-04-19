@@ -54,11 +54,6 @@ void Networking::TCP::TCPClient<Networking::NetworkAddress>::connect()
   m_userHandler(*m_socket);
 }
 
-// TODO: Change user handler in TCP/TLSClient to take HostType.
-//   This is for the case where the user is connecting to a hostname that
-//   resolves to multiple IP addresses. The user may want to know to which
-//   specific host are they talking to.
-// TODO: Change all <*.h> includes to <c*> includes.
 template<>
 void Networking::TCP::TCPClient<Networking::NetworkHost>::connect()
 {
