@@ -14,8 +14,15 @@
 
 #include <system_error>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#define str(x) _str(x)
+#define _str(x) #x
+
 Networking::NetworkHost::NetworkHost(NetworkAddress address)
-  : m_addresses{address}
+  : m_addresses{address}, m_hostname{nameLookup()}
 {}
 
 Networking::NetworkHost::NetworkHost(std::string hostString)
@@ -48,6 +55,8 @@ Networking::NetworkHost::NetworkHost(std::string hostString)
       getAddresses(hostString.substr(0, colonIndex),
                    static_cast<unsigned short>(portNumberInt));
     }
+
+  m_hostname = nameLookup();
 }
 
 Networking::NetworkHost
@@ -62,6 +71,8 @@ Networking::NetworkHost
     {
       getAddresses(ipOrHostname, portHostOrder);
     }
+
+  m_hostname = nameLookup();
 }
 
 unsigned short Networking::NetworkHost::getPortHostOrder() const
@@ -99,11 +110,74 @@ Networking::NetworkHost::end() const
 }
 
 std::string Networking::NetworkHost::getHostname() const
-{}
+{
+  return m_hostname;
+}
 
+std::string Networking::NetworkHost::nameLookup() const
+{
+  if (0 == m_addresses.size())
+    {
+      throw std::logic_error{__FILE__ ":" str(__LINE__) ": Cannot perform name"
+          " lookup for an empty IP address."};
+    }
+
+  char hostBuffer[NI_MAXHOST + 1];
+  memset(hostBuffer, 0, sizeof(hostBuffer));
+  const struct sockaddr& address = reinterpret_cast<const struct sockaddr&>
+    ((*cbegin()).getSockAddr());
+  int result = getnameinfo(&address, sizeof(struct sockaddr_in), hostBuffer,
+                           NI_MAXHOST, NULL, 0, NI_NAMEREQD);
+  if (0 == result)
+    {
+      return std::string{hostBuffer};
+    }
+  else if (EAI_NONAME && 1 == m_addresses.size())
+    {
+      if ('\0' != hostBuffer[0])
+        {
+          return std::string{hostBuffer};
+        }
+      else
+        {
+          return (*cbegin()).getIPDotNotation();
+        }
+    }
+  else
+    {
+      throw std::system_error{result, std::generic_category(),
+          gai_strerror(result)};
+    }
+}
+
+// TODO: Consider also supporting getaddrinfo_a?
+// TODO: Consider adding IDN support?
 void Networking::NetworkHost
 ::getAddresses(std::string hostname, unsigned short portHostOrder)
-{}
+{
+  struct addrinfo hints = {}, *response = NULL;
+  hints.ai_family = AF_INET; // We don't currently support IPv6.
+
+  errno = 0;
+  int status = getaddrinfo(hostname.c_str(), NULL, &hints, &response);
+  if (0 != status)
+    {
+      throw std::system_error{errno, std::generic_category(),
+          gai_strerror(status)};
+    }
+
+  for (struct addrinfo* element = response; NULL != element;
+       element = element->ai_next)
+    {
+      struct sockaddr_in& address
+        = reinterpret_cast<struct sockaddr_in&>(*(element->ai_addr));
+      address.sin_port = htons(portHostOrder);
+      m_addresses.push_back
+        (NetworkAddress{const_cast<const struct sockaddr_in&>(address)});
+    }
+
+  freeaddrinfo(response);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // NetworkHostConstIter

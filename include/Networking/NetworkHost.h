@@ -48,6 +48,7 @@ public:
 
 private:
   void getAddresses(std::string hostname, unsigned short portHostOrder);
+  std::string nameLookup() const;
 
   std::list<NetworkAddress> m_addresses;
   std::string m_hostname;

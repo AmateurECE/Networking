@@ -14,6 +14,10 @@
 
 #include <unistd.h>
 
+// TODO: Make this class a struct and put it in TCPListener
+// TODO: Rename file banners in tcc files.
+// TODO: Test with valgrind
+// TODO: Don't initialize m_socket twice
 template<class HostType>
 Networking::TCP::TCPRequest<HostType>
 ::TCPRequest(int socket, HostType connectingAddress,

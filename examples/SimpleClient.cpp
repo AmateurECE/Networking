@@ -24,8 +24,8 @@ int main()
 
   using namespace Networking;
   // Can also instantiate like this: NetAddress host{"127.0.0.1:13001"};
-  NetworkAddress host{"127.0.0.1", 13001};
-  auto client = TCP::TCPClient<NetworkAddress>{host, handler};
+  NetworkHost host{"localhost", 13001};
+  auto client = TCP::TCPClient<>{host, handler};
   client.connect();
 }
 

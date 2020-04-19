@@ -26,22 +26,19 @@
 int main()
 {
   // The user handler. Called whenever a connection is received.
-  auto closure = [](int socket, const Networking::NetworkAddress& requestor)
+  auto closure = [](int socket, const Networking::NetworkHost& requestor)
     {
-      std::cerr << "Received connection from ("
-      << requestor.getIPDotNotation() << ", "
-      << requestor.getPortHostOrder() << ")\n";
+      std::cerr << "Received connection from " + requestor.string() + "\n";
     };
 
   using namespace Networking;
   using namespace Networking::Interfaces;
   using namespace Networking::TCP;
-  TCPListener<NetworkAddress>::Builder builder
-    = TCPListener<NetworkAddress>::Builder()
+  TCPListener<>::Builder builder = TCPListener<>::Builder()
     .setPort(13001)
     .setUserHandler(closure);
   std::unique_ptr<IListener> listener
-    = std::make_unique<TCPListener<NetworkAddress>>(builder.build());
+    = std::make_unique<TCPListener<>>(builder.build());
   std::unique_ptr<IDelegator> delegator = std::make_unique<DelegatorSTSP>();
   BlockingServer server = BlockingServer{std::move(delegator),
                                          std::move(listener)};
