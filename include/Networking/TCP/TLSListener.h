@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/19/2020
+// LAST EDITED:     04/21/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -33,8 +33,8 @@ public:
     };
 
   TLSListener(HostType acceptedClients, unsigned int theBacklogSize,
-              bool reuseAddress, bool blocking, bool useTwoWayAuthentication,
-              HandshakeFailureAction action,
+              bool reuseAddress, bool blocking, bool maskSigPipe,
+              bool useTwoWayAuthentication, HandshakeFailureAction action,
               std::string certficateFile, std::string privateKeyFile,
               std::function<void(SSL*,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream);
@@ -84,6 +84,7 @@ public:
   Builder setBacklogSize(unsigned int);
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
+  Builder setMaskSigPipe(bool);
   Builder setTwoWayAuthentication(bool);
   Builder setHandshakeFailureAction(HandshakeFailureAction);
   Builder setCertificateFile(std::string);
@@ -99,6 +100,7 @@ private:
   unsigned int backlogSize = 8;
   bool reuseAddress = true;
   bool blocking = true;
+  bool maskSigPipe = true;
   bool twoWayAuthentication = false;
   HandshakeFailureAction failureAction = HandshakeFailureAction::NOTHING;
   std::string certificateFile = ""; // NO DEFAULT

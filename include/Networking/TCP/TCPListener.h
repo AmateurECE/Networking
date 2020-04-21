@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/19/2020
+// LAST EDITED:     04/21/2020
 ////
 
 #ifndef __ET_TCPLISTENER__
@@ -28,7 +28,7 @@ class Networking::TCP::TCPListener : public Networking::Interfaces::IListener
 {
 public:
   TCPListener(HostType acceptedClients, unsigned int theBacklogSize,
-              bool reuseAddress, bool blocking,
+              bool reuseAddress, bool blocking, bool maskSigPipe,
               std::function<void(unsigned int,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream);
 
@@ -38,7 +38,7 @@ public:
 
 private:
   int getConfiguredSocket(bool reuseAddress, bool blocking) const;
-  const struct sockaddr* getSockAddr(size_t&) const;
+  void doBind() const;
 
   HostType m_listeningAddress;
   std::function<void(unsigned int,const HostType&)> m_userHandler;
@@ -55,6 +55,7 @@ public:
   Builder setBacklogSize(unsigned int);
   Builder setReuseAddress(bool);
   Builder setBlocking(bool);
+  Builder setMaskSigPipe(bool);
   using UserHandler = std::function<void(unsigned int,const HostType&)>;
   Builder setUserHandler(UserHandler userHandler);
   Builder setLogStream(std::function<void(const std::string&)> logStream);
@@ -66,6 +67,7 @@ private:
   unsigned int backlogSize = 8;
   bool reuseAddress = true;
   bool blocking = true;
+  bool maskSigPipe = true;
   UserHandler userHandler = [](unsigned int,const HostType&){ return; };
   std::function<void(const std::string&)> logStream =
     [](const std::string& message)

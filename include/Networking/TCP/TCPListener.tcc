@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/19/2020
+// LAST EDITED:     04/21/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
@@ -15,6 +15,7 @@
 
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -26,26 +27,32 @@
 template<class HostType>
 Networking::TCP::TCPListener<HostType>
 ::TCPListener(HostType acceptedClients, unsigned int theBacklogSize,
-              bool reuseAddress, bool blocking,
+              bool reuseAddress, bool blocking, bool maskSigPipe,
               std::function<void(unsigned int,const HostType&)> userHandler,
               std::function<void(const std::string&)> logStream)
   : m_listeningAddress{acceptedClients}, m_userHandler{userHandler},
     m_logStream{logStream}
 {
   m_listeningSocket
-    = std::shared_ptr<int>(new int, [](int *pInt) {
+    = std::shared_ptr<int>(new int, [maskSigPipe](int *pInt) {
         ::close(*pInt);
+        if (maskSigPipe)
+          {
+            signal(SIGPIPE, SIG_DFL);
+          }
         delete pInt;
       });
-  *m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
 
   errno = 0;
-  size_t sockLen = 0;
-  const struct sockaddr* address = getSockAddr(sockLen);
-  if (-1 == ::bind(*m_listeningSocket, address, sockLen))
+  if (maskSigPipe && SIG_ERR == signal(SIGPIPE, SIG_IGN))
     {
-      throw std::system_error{errno, std::generic_category()};
+      throw std::system_error{errno, std::generic_category(),
+          __FILE__ ": Could not mask SIGPIPE"};
     }
+
+  *m_listeningSocket = getConfiguredSocket(reuseAddress, blocking);
+
+  doBind();
 
   if (0 != ::listen(*m_listeningSocket, theBacklogSize))
     {
@@ -54,21 +61,35 @@ Networking::TCP::TCPListener<HostType>
 }
 
 template<>
-const struct sockaddr* Networking::TCP::TCPListener<Networking::NetworkHost>
-::getSockAddr(size_t& socketLength) const
+void Networking::TCP::TCPListener<Networking::NetworkHost>
+::doBind() const
 {
-  socketLength = sizeof(struct sockaddr_in);
-  return reinterpret_cast<const struct sockaddr*>
-    (&((*(m_listeningAddress.cbegin())).getSockAddr()));
+  const size_t sockLen = sizeof(struct sockaddr_in);
+  for (auto const& address : m_listeningAddress)
+    {
+      if (0 == ::bind(*m_listeningSocket,
+                      reinterpret_cast<const struct sockaddr*>
+                      (&address.getSockAddr()),
+                      sockLen))
+        {
+          return;
+        }
+    }
+  throw std::system_error{errno, std::generic_category()};
 }
 
 template<>
-const struct sockaddr* Networking::TCP::TCPListener<Networking::NetworkAddress>
-::getSockAddr(size_t& socketLength) const
+void Networking::TCP::TCPListener<Networking::NetworkAddress>
+::doBind() const
 {
-  socketLength = sizeof(struct sockaddr_in);
-  return reinterpret_cast<const struct sockaddr*>
-    (&m_listeningAddress.getSockAddr());
+  const size_t sockLen = sizeof(struct sockaddr_in);
+  if (-1 == ::bind(*m_listeningSocket,
+                   reinterpret_cast<const struct sockaddr*>
+                   (&m_listeningAddress.getSockAddr()),
+                   sockLen))
+    {
+      throw std::system_error{errno, std::generic_category()};
+    }
 }
 
 template<class HostType>
@@ -167,6 +188,12 @@ Networking::TCP::TCPListener<HostType>::Builder
 template<class HostType>
 typename Networking::TCP::TCPListener<HostType>::Builder
 Networking::TCP::TCPListener<HostType>::Builder
+::setMaskSigPipe(bool theMaskSigPipe)
+{ maskSigPipe = theMaskSigPipe; return *this; }
+
+template<class HostType>
+typename Networking::TCP::TCPListener<HostType>::Builder
+Networking::TCP::TCPListener<HostType>::Builder
 ::setUserHandler(UserHandler theUserHandler)
 { userHandler = theUserHandler; return *this; }
 
@@ -181,7 +208,7 @@ typename Networking::TCP::TCPListener<HostType>
 Networking::TCP::TCPListener<HostType>::Builder::build() const
 {
   return TCPListener{listeningAddress, backlogSize, reuseAddress, blocking,
-      userHandler, logStream};
+      maskSigPipe, userHandler, logStream};
 }
 
 ///////////////////////////////////////////////////////////////////////////////

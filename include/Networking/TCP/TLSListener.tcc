@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/19/2020
+// LAST EDITED:     04/21/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
@@ -29,8 +29,8 @@ std::string getSSLErrors()
 
 template<class HostType>
 Networking::TCP::TLSListener<HostType>
-::TLSListener(HostType acceptedClients,
-              unsigned int theBacklogSize, bool reuseAddress, bool blocking,
+::TLSListener(HostType acceptedClients, unsigned int theBacklogSize,
+              bool reuseAddress, bool blocking, bool maskSigPipe,
               bool useTwoWayAuthentication, HandshakeFailureAction action,
               std::string certificateFile, std::string privateKeyFile,
               std::function<void(SSL*,const HostType&)> userHandler,
@@ -43,7 +43,7 @@ Networking::TCP::TLSListener<HostType>
     m_tlsHandler{std::make_unique<struct TLSHandler>
         (m_sslContext, userHandler, action, logStream)},
     m_listener{acceptedClients, theBacklogSize, reuseAddress, blocking,
-        std::ref(*m_tlsHandler), logStream},
+        maskSigPipe, std::ref(*m_tlsHandler), logStream},
     m_useTwoWayAuthentication{useTwoWayAuthentication},
     m_userHandler{userHandler}, m_logStream{logStream}
 {}
@@ -173,6 +173,12 @@ Networking::TCP::TLSListener<HostType>::Builder
 template<class HostType>
 typename Networking::TCP::TLSListener<HostType>::Builder
 Networking::TCP::TLSListener<HostType>::Builder
+::setMaskSigPipe(bool isMaskingSigPipe)
+{ maskSigPipe = isMaskingSigPipe; return *this; }
+
+template<class HostType>
+typename Networking::TCP::TLSListener<HostType>::Builder
+Networking::TCP::TLSListener<HostType>::Builder
 ::setTwoWayAuthentication(bool theTwoWayAuthentication)
 { twoWayAuthentication = theTwoWayAuthentication; return *this; }
 
@@ -211,8 +217,8 @@ typename Networking::TCP::TLSListener<HostType>
 Networking::TCP::TLSListener<HostType>::Builder::build() const
 {
   return TLSListener<HostType>{listeningAddress, backlogSize, reuseAddress,
-      blocking, twoWayAuthentication, failureAction, certificateFile,
-      privateKeyFile, userHandler, logStream};
+      blocking, maskSigPipe, twoWayAuthentication, failureAction,
+      certificateFile, privateKeyFile, userHandler, logStream};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
