@@ -7,7 +7,7 @@
 //
 // CREATED:         04/09/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     05/01/2020
 ////
 
 #include <Networking/TCP/TLSClient.h>
@@ -154,6 +154,7 @@ void Networking::TCP::TLSClient<HostType>::connect()
     }
 
   // Disable weak ciphers.
+  // TODO: Only allow TLS v1.2 in TLSListener/TLSClient
   const char* const PREFERRED_CIPHERS
     = "HIGH:!aNULL:!kRSA:!PSK:!SRP:!MD5:!RC4";
   result = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);

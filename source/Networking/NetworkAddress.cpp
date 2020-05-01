@@ -7,7 +7,7 @@
 //
 // CREATED:         04/17/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     05/01/2020
 ////
 
 #include <Networking/NetworkAddress.h>
@@ -57,6 +57,7 @@ std::string Networking::NetworkAddress::getIPDotNotation() const
 {
   char nameBuffer[INET_ADDRSTRLEN];
   memset(nameBuffer, 0, sizeof(nameBuffer));
+  // TODO: Allow instantiation with IPv6 String.
   if (nameBuffer != inet_ntop(PF_INET,
                               &(m_address.sin_addr.s_addr),
                               nameBuffer,

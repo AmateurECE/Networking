@@ -7,7 +7,7 @@
 //
 // CREATED:         04/03/2020
 //
-// LAST EDITED:     04/18/2020
+// LAST EDITED:     05/01/2020
 ////
 
 #include <Networking/TCP/TCPClient.h>
@@ -26,6 +26,7 @@ Networking::TCP::TCPClient<HostType>
     m_logStream{logStream}
 {
   errno = 0;
+  // TODO: Enable IPv6
   int socket= ::socket(PF_INET, SOCK_STREAM, 0);
   if (-1 == socket)
     {

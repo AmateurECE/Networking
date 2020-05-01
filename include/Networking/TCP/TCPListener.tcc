@@ -7,7 +7,7 @@
 //
 // CREATED:         04/02/2020
 //
-// LAST EDITED:     04/21/2020
+// LAST EDITED:     05/01/2020
 ////
 
 #include <Networking/TCP/TCPListener.h>
@@ -98,6 +98,7 @@ int Networking::TCP::TCPListener<HostType>
 {
   errno = 0;
   int theSocket = 0;
+  // TODO: Enable IPv6
   if (-1 == (theSocket = ::socket(PF_INET, SOCK_STREAM, 0)))
     {
       throw std::system_error{errno, std::generic_category()};

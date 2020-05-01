@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/21/2020
+// LAST EDITED:     05/01/2020
 ////
 
 #include <Networking/Interfaces/IRequest.h>
@@ -68,6 +68,7 @@ SSL_CTX* Networking::TCP::TLSListener<HostType>::createContext() const
           + getSSLErrors()};
     }
 
+  // TODO: Throw a std::logic_error if the cert paths are not set.
   SSL_CTX_set_ecdh_auto(context, 1);
   if (0 >= SSL_CTX_use_certificate_file(context, m_certificateFile.c_str(),
                                         SSL_FILETYPE_PEM))
@@ -83,6 +84,7 @@ SSL_CTX* Networking::TCP::TLSListener<HostType>::createContext() const
           + getSSLErrors()};      
     }
 
+  // TODO: Call SSL_CTX_check_private_key()
   return context;
 }
 
@@ -110,6 +112,14 @@ void Networking::TCP::TLSListener<HostType>::TLSHandler
     });
   SSL* sslRaw = m_ssl.get();
 
+  // TODO: Race conditions?
+  //   The TLSHandler operator() is called after the Delegator has dispatched
+  //   the handler function received by the TCPListener constructor, meaning
+  //   that there's a possibility that we could be running in a thread
+  //   separate from the TLSListener's main thread. This means that there's a
+  //   possibility for multiple threads to vie for concurrent access of the
+  //   SSL_CTX owned by the TLSListener instance. Look into whether this needs
+  //   to be protected using a mutex.
   SSL_set_fd(sslRaw, socket);
   if (0 >= SSL_accept(sslRaw))
     {

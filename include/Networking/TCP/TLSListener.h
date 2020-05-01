@@ -7,7 +7,7 @@
 //
 // CREATED:         04/04/2020
 //
-// LAST EDITED:     04/21/2020
+// LAST EDITED:     05/01/2020
 ////
 
 #ifndef __ET_TLSLISTENER__
@@ -32,6 +32,7 @@ public:
       THROW
     };
 
+  // TODO: Implement two-way authentication
   TLSListener(HostType acceptedClients, unsigned int theBacklogSize,
               bool reuseAddress, bool blocking, bool maskSigPipe,
               bool useTwoWayAuthentication, HandshakeFailureAction action,

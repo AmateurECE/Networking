@@ -1,0 +1,8 @@
+./include/Networking/TCP/TLSListener.tcc: Call SSL_CTX_check_private_key() | id:0d914d55356d1a973b20ad01426ec13ae0b6de26
+./source/Networking/NetworkAddress.cpp: Allow instantiation with IPv6 String. | id:15b3c9c93368ba72433e021a526067cc47dee877
+./include/Networking/TCP/TLSClient.tcc: Only allow TLS v1.2 in TLSListener/TLSClient | id:1c2c3a69341cf8a1b0b063e57838daf5e4a264a7
+./include/Networking/TCP/TLSListener.tcc: Throw a std::logic_error if the cert paths are not set. | id:310540533ff040889d4d0571b75fd22a6de1f47c
+./include/Networking/TCP/TLSListener.h: Implement two-way authentication | id:606256216fa90975d7c60f13fc18d5b1f2a472f6
+./include/Networking/TCP/TLSListener.tcc: Race conditions? | id:89e52b0ff1106e037cab653c9e900b3827bf5229
+./include/Networking/TCP/TCPListener.tcc: Enable IPv6 | id:989b661082e10c5272669ab4431b8a1a3b780a8a
+./include/Networking/TCP/TCPClient.tcc: Enable IPv6 | id:9d083bd8d315d20190fbd94021b734b0e20d56f8
